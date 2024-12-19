@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>                                                                          
+    <meta charset="UTF-8">                                                      
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">      
+    <title>Initial Pose Sender</title>                                          
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>Send Initial Pose to ROS 2</h1>                                         
+    <form id="poseForm">
+        <label>X: <input type="number" id="x" value="1.0" step="0.1"></label><br>
+        <label>Y: <input type="number" id="y" value="2.0" step="0.1"></label><br>
+        <label>Orientation (w): <input type="number" id="w" value="1.0" step="0.1"></label><br>
+        <label>Orientation (z): <input type="number" id="oz" value="0.0" step="0.1"></label><br>
+        <button type="submit">Send Initial Pose</button>
+    </form>
+
+    <h1>Send Goal Pose to ROS 2</h1>                                         
+    <form id="goalForm">                                                           
+        <label>X: <input type="number" id="goal_x" value="0.0" step="0.01"></label><br>
+        <label>Y: <input type="number" id="goal_y" value="0.0" step="0.01"></label><br>
+        <label>Orientation (w): <input type="number" id="goal_w" value="0.0" step="0.01"></label><br>
+        <label>Orientation (z): <input type="number" id="goal_z" value="0.0" step="0.01"></label><br>
+        <button type="submit">Send Goal Pose</button>
+    </form>
+
+
+    
+
+    <script>
+        // ROSBridge接続
+        var ros = new ROSLIB.Ros({
+            url: 'ws://172.25.19.148:9090'  // rosbridge_serverのWebSocket URL
+        });
+
+        ros.on('connection', function() {
+            console.log('Connected to rosbridge server');
+        });
+
+        ros.on('error', function(error) {
+            console.log('Error connecting to rosbridge server: ', error);
+        });
+
+        ros.on('close', function() {
+            console.log('Connection to rosbridge server closed');
+        });
+
+        // Publisherの作成
+        var initialPosePublisher = new ROSLIB.Topic({
+            ros: ros,
+            name: '/initialpose',
+            messageType: 'geometry_msgs/PoseWithCovarianceStamped'
+        });
+
+        var goalPose = new ROSLIB.Topic({
+            ros: ros,
+            name: '/goal_pose', // ナビゲーション目標のトピック名
+            messageType: 'geometry_msgs/PoseStamped'
+        });
+
+
+        // フォーム送信イベント
+        document.getElementById('poseForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // 入力値の取得
+            var x = parseFloat(document.getElementById('x').value);
+            var y = parseFloat(document.getElementById('y').value);
+            var w = parseFloat(document.getElementById('w').value);
+            var oz = parseFloat(document.getElementById('oz').value);
+
+            // メッセージの作成
+            var initialPoseMessage = {
+                header: {
+                    frame_id: 'map'
+                },
+                pose: {
+                    pose: {
+                        position: { x: x, y: y, z: 0.0 },
+                        orientation: { x: 0.0, y: 0.0, z: oz, w: w }
+                    },
+                    covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                }
+            };
+
+            // トピックにメッセージを送信
+            initialPosePublisher.publish(initialPoseMessage);
+            console.log('Initial pose sent: ', initialPoseMessage);
+        });
+
+        document.getElementById('goalForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // 入力値の取得
+            var goal_x = parseFloat(document.getElementById('goal_x').value);
+            var goal_y = parseFloat(document.getElementById('goal_y').value);
+            var goal_w = parseFloat(document.getElementById('goal_w').value);
+            var goal_z = parseFloat(document.getElementById('goal_z').value);
+
+            // メッセージの作成
+            var goalMsg = new ROSLIB.Message({
+                header: {
+                    stamp: { sec: 0, nsec: 0 },  // 時間のスタンプ
+                    frame_id: 'map'  // フレームID（マップ基準）
+                },
+                pose: {
+                    position: {
+                        x: goal_x,  // ユーザー指定のx座標
+                        y: goal_y,  // ユーザー指定のy座標
+                        z: 0.0
+                    },
+                    orientation: {
+                        x: 0.0,
+                        y: 0.0,
+                        z: goal_z,
+                        w: goal_w
+                    }
+                }
+            });
+
+            // トピックにメッセージを送信
+            goalPose.publish(goalMsg);
+            console.log('goal pose sent: ', goalMsg);
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS 2 cmd_vel Web App</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>ROS 2 cmd_vel Web App</h1>
+    <button id="moveForward">Move Forward</button>
+    <button id="stop">Stop</button>
+
+    <script>
+        // ROS 2 WebSocket接続の設定
+        var ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'  // rosbridgeが起動しているURL
+        });
+
+        // cmd_velトピックの設定
+        var cmdVel = new ROSLIB.Topic({
+            ros: ros,
+            name: '/cmd_vel',  // 送信するトピック名
+            messageType: 'geometry_msgs/Twist'  // メッセージタイプ
+        });
+
+        // ロボットを前進させるメッセージ
+        var forwardMsg = new ROSLIB.Message({
+            linear: {
+                x: 0.5,  // 前進速度（m/s）
+                y: 0.0,
+                z: 0.0
+            },
+            angular: {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0
+            }
+        });
+
+        // ロボットを停止させるメッセージ
+        var stopMsg = new ROSLIB.Message({
+            linear: {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0
+            },
+            angular: {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0
+            }
+        });
+
+        // 前進ボタンが押されたときに前進メッセージを送信
+        document.getElementById("moveForward").onclick = function() {
+            cmdVel.publish(forwardMsg);
+        };
+
+        // 停止ボタンが押されたときに停止メッセージを送信
+        document.getElementById("stop").onclick = function() {
+            cmdVel.publish(stopMsg);
+        };
+    </script>
+</body>
+</html>

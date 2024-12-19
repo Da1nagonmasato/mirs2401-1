@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS2 Lifecycle Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+    <script>
+        // ROSBridgeのWebSocket URL
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090' // ROSBridgeのWebSocket URL
+        });
+
+        ros.on('connection', () => {
+            console.log('Connected to ROSBridge');
+        });
+
+        ros.on('error', (error) => {
+            console.error('Error connecting to ROSBridge:', error);
+        });
+
+        ros.on('close', () => {
+            console.log('Connection to ROSBridge closed');
+        });
+
+        // `ChangeState` サービスクライアントの設定
+        const changeStateClient = new ROSLIB.Service({
+            ros: ros,
+            name: '/controller_server/change_state', // 対象ノードのサービス名
+            serviceType: 'lifecycle_msgs/srv/ChangeState'
+        });
+
+        // Deactivateアクションを実行する関数
+        function deactivateControllerServer() {
+            // サービスリクエストを作成
+            const request = new ROSLIB.ServiceRequest({
+                transition: { id: 4, label: 'deactivate' } // 状態遷移: deactivate
+            });
+
+            // サービス呼び出し
+            changeStateClient.callService(request, (result) => {
+                console.log('Result:', result);
+                if (result.success) {
+                    alert('Controller Server successfully deactivated.');
+                } else {
+                    alert('Failed to deactivate Controller Server.');
+                }
+            });
+        }
+
+        window.onload = function () {
+            // ボタンにイベントリスナーを設定
+            document.getElementById('deactivate_btn').onclick = deactivateControllerServer;
+        };
+    </script>
+</head>
+<body>
+    <h1>ROS2 Lifecycle Management</h1>
+    <button id="deactivate_btn">Deactivate Controller Server</button>
+</body>
+</html>
+

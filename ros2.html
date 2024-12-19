@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS 2 Topic Sender</title>
+    <script src="RosLib.js"></script>
+</head>
+<body>
+    <h1>ROS 2 Topic Sender</h1>
+    <button id="sendButton">Send Message</button>
+
+    <script>
+        // Connect to the rosbridge server
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090' // rosbridgeのWebSocketアドレス
+        });
+
+        ros.on('connection', function() {
+            console.log('Connected to rosbridge server.');
+        });
+
+        ros.on('error', function(error) {
+            console.error('Error connecting to rosbridge server:', error);
+        });
+
+        ros.on('close', function() {
+            console.log('Connection to rosbridge server closed.');
+        });
+
+        // Define a ROS 2 topic
+        const topic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/example_topic', // トピック名
+            messageType: 'std_msgs/String' // 使用するメッセージ型 (ROS 2でも互換あり)
+        });
+
+        // Button click event to send a message
+        document.getElementById('sendButton').addEventListener('click', function() {
+            const message = new ROSLIB.Message({
+                data: 'Hello from Web! (ROS 2)'
+            });
+            topic.publish(message);
+            alert('Message sent: ' + message.data);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS 2 Web App</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>ROS 2 Web App</h1>
+    <button id="sendButton">Send Data</button>
+
+    <script>
+        // ROS2 WebSocket接続の設定
+        var ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'  // WebSocketのURL、rosbridgeが起動しているURLに合わせてください
+        });
+
+        // トピック設定
+        var topic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/example_topic',  // 送信するトピック名
+            messageType: 'std_msgs/String'  // メッセージタイプ
+        });
+
+        // ボタンが押された時にメッセージを送信
+        document.getElementById("sendButton").onclick = function() {
+            var message = new ROSLIB.Message({
+                data: 'Hello from Web App!'
+            });
+            topic.publish(message);
+            console.log('Message sent: ' + message.data);
+        };
+    </script>
+</body>
+</html>

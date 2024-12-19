@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initial Pose Sender</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>Send Initial Pose to ROS 2</h1>
+    <form id="poseForm">
+        <label>X: <input type="number" id="x" value="1.0" step="0.1"></label><br>
+        <label>Y: <input type="number" id="y" value="2.0" step="0.1"></label><br>
+        <label>Z: <input type="number" id="z" value="0.0" step="0.1"></label><br>
+        <label>Orientation (w): <input type="number" id="w" value="1.0" step="0.1"></label><br>
+        <label>Orientation (z): <input type="number" id="oz" value="0.0" step="0.1"></label><br>
+        <button type="submit">Send Initial Pose</button>
+    </form>
+
+    <script>
+        // ROSBridge接続
+        var ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'  // rosbridge_serverのWebSocket URL
+        });
+
+        ros.on('connection', function() {
+            console.log('Connected to rosbridge server');
+        });
+
+        ros.on('error', function(error) {
+            console.log('Error connecting to rosbridge server: ', error);
+        });
+
+        ros.on('close', function() {
+            console.log('Connection to rosbridge server closed');
+        });
+
+        // Publisherの作成
+        var initialPosePublisher = new ROSLIB.Topic({
+            ros: ros,
+            name: '/initialpose',
+            messageType: 'geometry_msgs/PoseWithCovarianceStamped'
+        });
+
+        // フォーム送信イベント
+        document.getElementById('poseForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // 入力値の取得
+            var x = parseFloat(document.getElementById('x').value);
+            var y = parseFloat(document.getElementById('y').value);
+            var z = parseFloat(document.getElementById('z').value);
+            var w = parseFloat(document.getElementById('w').value);
+            var oz = parseFloat(document.getElementById('oz').value);
+
+            // メッセージの作成
+            var initialPoseMessage = {
+                header: {
+                    frame_id: 'map'
+                },
+                pose: {
+                    pose: {
+                        position: { x: x, y: y, z: z },
+                        orientation: { x: 0.0, y: 0.0, z: oz, w: w }
+                    },
+                    covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                }
+            };
+
+            // トピックにメッセージを送信
+            initialPosePublisher.publish(initialPoseMessage);
+            console.log('Initial pose sent: ', initialPoseMessage);
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>移動目標指定</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>目的地指定</h1>
+    <label for="x">X座標 (m): </label>
+    <input type="number" id="x" step="0.01" value="2.0"><br>
+
+    <label for="y">Y座標 (m): </label>
+    <input type="number" id="y" step="0.01" value="3.0"><br>
+
+    <label for="yaw">向き (度): </label>
+    <input type="number" id="yaw" step="1" value="0"><br>
+
+    <button id="sendGoal">目標送信</button>
+
+    <script>
+        // ROS接続設定
+        var ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090' // ROSブリッジのWebSocket URL
+        });
+
+        // 目標ポーズをパブリッシュするトピック
+        var goalPose = new ROSLIB.Topic({
+            ros: ros,
+            name: '/goal_pose', // ナビゲーション目標のトピック名
+            messageType: 'geometry_msgs/PoseStamped'
+        });
+
+        // ユーザー入力からクォータニオンを計算する関数
+        function yawToQuaternion(yaw) {
+            return {
+                x: 0.0,
+                y: 0.0,
+                z: Math.sin(yaw / 2.0),
+                w: Math.cos(yaw / 2.0)
+            };
+        }
+
+        // ボタンがクリックされたときの処理
+        document.getElementById("sendGoal").onclick = function() {
+            var x = parseFloat(document.getElementById("x").value);
+            var y = parseFloat(document.getElementById("y").value);
+            var yaw = parseFloat(document.getElementById("yaw").value) * Math.PI / 180; // 度をラジアンに変換
+
+            var quaternion = yawToQuaternion(yaw);
+
+            // 移動目標メッセージの作成
+            var goalMsg = new ROSLIB.Message({
+                header: {
+                    stamp: { sec: 0, nsec: 0 },  // 時間のスタンプ
+                    frame_id: 'map'  // フレームID（マップ基準）
+                },
+                pose: {
+                    position: {
+                        x: x,  // ユーザー指定のx座標
+                        y: y,  // ユーザー指定のy座標
+                        z: 0.0
+                    },
+                    orientation: {
+                        x: quaternion.x,
+                        y: quaternion.y,
+                        z: quaternion.z,
+                        w: quaternion.w
+                    }
+                }
+            });
+
+            // トピックにメッセージを送信
+            goalPose.publish(goalMsg);
+            alert(`目的地を送信しました: x=${x}, y=${y}, 向き=${yaw * 180 / Math.PI}度`);
+        };
+    </script>
+</body>
+</html>
+

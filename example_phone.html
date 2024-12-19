@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ROS2 Web Control</title>
+  <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+  <style>
+    #status {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .connected {
+      color: green;
+    }
+    .disconnected {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>ROS2 Web Control</h1>
+  <p id="status" class="disconnected">Disconnected</p>
+  <button id="sendMessage">Send Message</button>
+  
+  <script type="text/javascript">
+    // WebSocket接続の準備
+    var ros = new ROSLIB.Ros({
+      url: 'ws://172.25.19.148:9090'  // ROS2 WebSocketサーバーのURLを指定
+    });
+
+    // ステータス表示の要素
+    var statusElement = document.getElementById('status');
+
+    // WebSocket接続成功時
+    ros.on('connection', function() {
+      console.log('Connected to WebSocket server.');
+      statusElement.textContent = 'Connected';  // 接続状態を表示
+      statusElement.classList.remove('disconnected');
+      statusElement.classList.add('connected');
+    });
+
+    // WebSocket切断時
+    ros.on('close', function() {
+      console.log('Closed connection to WebSocket server.');
+      statusElement.textContent = 'Disconnected';  // 切断状態を表示
+      statusElement.classList.remove('connected');
+      statusElement.classList.add('disconnected');
+    });
+
+    // WebSocketエラー時
+    ros.on('error', function(error) {
+      console.log('Error connecting to WebSocket server: ', error);
+      statusElement.textContent = 'Error';  // エラー状態を表示
+      statusElement.classList.remove('connected', 'disconnected');
+    });
+
+    // トピックへの接続
+    var topic = new ROSLIB.Topic({
+      ros: ros,
+      name: '/example_topic',
+      messageType: 'std_msgs/String'
+    });
+
+    // ボタンをクリックしてメッセージ送信
+    document.getElementById('sendMessage').onclick = function() {
+      var message = new ROSLIB.Message({
+        data: 'Hello from Web App!'
+      });
+      topic.publish(message);
+    };
+  </script>
+</body>
+</html>
+

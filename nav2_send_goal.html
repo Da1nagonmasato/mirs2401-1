@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS 2 Nav2 Action Control</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>Nav2 Action Goal</h1>
+    <button id="send_goal">Send Goal</button>
+
+    <script>
+        var ros = new ROSLIB.Ros({
+            url : 'ws://localhost:9090'  // WebSocketサーバーURL（ローカルサーバーの場合）
+        });
+
+        // ROSとの接続を確認するイベント
+        ros.on('connection', function() {
+            console.log('Connected to ROS 2 server');
+        });
+
+        ros.on('error', function(error) {
+            console.log('Error connecting to ROS 2 server: ', error);
+        });
+
+        ros.on('close', function() {
+            console.log('Closed connection to ROS 2 server');
+        });
+
+        // ボタンをクリックしたときにGoalを送信
+        document.getElementById('send_goal').addEventListener('click', function() {
+            // ActionClientを作成
+            var actionClient = new ROSLIB.ActionClient({
+                ros: ros,
+                serverName: '/bt_navigator',  // アクションサーバーの名前
+                actionName: '/navigate_to_pose'  // 使用するアクション名
+            });
+
+            // Goalメッセージを作成
+            var goal = new ROSLIB.Goal({
+                actionClient: actionClient,
+                goalMessage: {
+                    pose: {
+                        header: {
+                            frame_id: 'map'  // 目標の座標系
+                        },
+                        pose: {
+                            position: {
+                                x: -0.5,  // 目標のX座標
+                                y: 0.7,   // 目標のY座標
+                                z: 0.0    // 目標のZ座標
+                            },
+                            orientation: {
+                                x: 0.0,   // クォータニオン（回転）
+                                y: 0.0,
+                                z: 0.0,
+                                w: 1.0
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Goalを送信
+            goal.send();
+            console.log('Goal sent!');
+        });
+    </script>
+</body>
+</html>
+

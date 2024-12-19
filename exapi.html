@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GAS API Example</title>
+  <script>
+    // GETリクエストを送信する関数
+    function callGetApi() {
+     /* // Google Apps ScriptのAPIエンドポイント
+      const apiUrl = "https://script.google.com/macros/s/AKfycbxIB7Do3qWNa1IglxIRj_xpOTE6oVdAnpm0lteJpfwRJ3g-LAblJTlAtYTdC9vqBotU/exec";
+
+      // クエリパラメータを追加（例: name=John, age=30）
+      const url = apiUrl + "?name=John&age=30";
+
+      // Fetch APIを使用してGETリクエストを送信
+      fetch(url)
+        .then(response => response.json())  // JSONレスポンスを解析
+        .then(data => {
+          // レスポンスデータをHTMLに表示
+          document.getElementById("getResponse").textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          console.error("Error:", error);
+        });*/
+
+       var resp = new XMLHttpRequest();
+ 
+        resp.open('GET','https://script.google.com/macros/s/AKfycbxpZvXUskmQQPLPEJr5g2HtCvsTWnliHsH-4oHYbOw1vaMPrN1DpusDCKcxuva97bCo/exec');
+      resp.send();
+       console.log(resp);
+       
+      resp.onreadystatechange = function() {
+          if(resp.readyState === 4 && resp.status === 200) {
+            console.log(resp.response);
+       // データが取得できた時の処理内容
+       console.log("succesed");
+            }
+      }
+          }
+
+    // POSTリクエストを送信する関数
+    function callPostApi() {
+      const apiUrl = "https://script.google.com/macros/s/AKfycbx-Opllvnhld205htNyUalThHCc5avvI2UdByEOmYV8QHZ9JVzLXsTLHtQHIuOEcYBx/exec";
+
+      // 送信するPOSTデータ
+      const postData = {
+        key1: "value1",
+        key2: "value2"
+      };
+
+      // Fetch APIを使用してPOSTリクエストを送信
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postData)  // POSTデータをJSON形式で送信
+      })
+        .then(response => response.json())  // JSONレスポンスを解析
+        .then(data => {
+          // レスポンスデータをHTMLに表示
+          document.getElementById("postResponse").textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          console.error("Error:", error);
+        });
+    }
+  </script>
+</head>
+<body>
+  <h1>Google Apps Script API Example</h1>
+
+  <div>
+    <h2>GET Request</h2>
+    <button onclick="callGetApi()">Send GET Request</button>
+    <pre id="getResponse">Response will appear here...</pre>
+  </div>
+
+  <div>
+    <h2>POST Request</h2>
+    <button onclick="callPostApi()">Send POST Request</button>
+    <pre id="postResponse">Response will appear here...</pre>
+  </div>
+</body>
+</html>

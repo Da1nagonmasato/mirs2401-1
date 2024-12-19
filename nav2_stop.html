@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancel Navigation Goal</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>Cancel Navigation Goal</h1>
+    <button id="cancelButton">Cancel Goal</button>
+
+    <script>
+        // ROS2 WebSocketの設定
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'  // rosbridgeのWebSocketサーバURL
+        });
+
+        // cancel_goalサービスを呼び出す関数
+        function cancelGoal() {
+            const cancelGoalService = new ROSLIB.Service({
+                ros: ros,
+                name: '/navigate_to_pose/cancel_goal',  // サービス名
+                serviceType: 'actionlib_msgs/GoalStatus'  // サービスの型
+            });
+
+            const request = new ROSLIB.ServiceRequest();
+
+            cancelGoalService.callService(request, function(result) {
+                console.log('Goal canceled:', result);
+            });
+        }
+
+        // ボタンのイベントリスナー
+        document.getElementById('cancelButton').addEventListener('click', cancelGoal);
+    </script>
+</body>
+</html>
+

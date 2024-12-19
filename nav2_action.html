@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigate to Pose</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>Navigate to Pose</h1>
+    <p>Enter the target coordinates:</p>
+
+    <form id="navigationForm">
+        <label for="x">X Position:</label>
+        <input type="number" id="x" name="x" value="1.0"><br><br>
+        <label for="y">Y Position:</label>
+        <input type="number" id="y" name="y" value="1.0"><br><br>
+        <label for="z">Z Position:</label>
+        <input type="number" id="z" name="z" value="0.0"><br><br>
+        <label for="orientation">Orientation (Quaternion W):</label>
+        <input type="number" id="w" name="w" value="1.0"><br><br>
+        <button type="button" onclick="sendGoal()">Send Goal</button>
+    </form>
+
+    <div id="status"></div>
+
+    <script type="text/javascript">
+        // ROSインスタンス作成
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090' // ここにROS Bridge WebSocketサーバーのIPアドレスを指定
+        });
+
+        // アクションクライアント作成
+        const actionClient = new ROSLIB.ActionClient({
+            ros: ros,
+            serverName: '/navigate_to_pose',
+            actionName: 'nav2_msgs/action/NavigateToPose'
+        });
+
+        // WebSocket接続確認
+        ros.on('connection', function() {
+            console.log('Connected to rosbridge');
+            document.getElementById('status').innerText = 'Connected to rosbridge';
+        });
+
+        ros.on('error', function(error) {
+            console.log('Error connecting to rosbridge:', error);
+            document.getElementById('status').innerText = 'Error connecting to rosbridge';
+        });
+
+        ros.on('close', function() {
+            console.log('Connection to rosbridge closed');
+            document.getElementById('status').innerText = 'Connection to rosbridge closed';
+        });
+
+        // ゴールを送信する関数
+        function sendGoal() {
+            const x = parseFloat(document.getElementById('x').value);
+            const y = parseFloat(document.getElementById('y').value);
+            const z = parseFloat(document.getElementById('z').value);
+            const w = parseFloat(document.getElementById('w').value);
+
+            // ゴールメッセージ作成
+            const goal = new ROSLIB.Goal({
+                actionClient: actionClient,
+                goalMessage: {
+                    pose: {
+                        header: {
+                            frame_id: 'map', // 'map'フレーム
+                            stamp: { secs: 0, nsecs: 0 } // 現在は任意
+                        },
+                        pose: {
+                            position: { x: x, y: y, z: z }, // ユーザー入力座標
+                            orientation: { x: 0.0, y: 0.0, z: 0.0, w: w } // ユーザー入力オリエンテーション
+                        }
+                    },
+                    behavior_tree: '' // 必要に応じてビヘイビアツリーを指定
+                }
+            });
+
+            // ゴール送信
+            goal.send();
+
+            // 結果を受け取る
+            goal.on('result', function(result) {
+                console.log('Result:', result);
+                document.getElementById('status').innerText = 'Goal reached!';
+            });
+
+            // フィードバックを受け取る
+            goal.on('feedback', function(feedback) {
+                console.log('Feedback:', feedback);
+                document.getElementById('status').innerText = 'Navigating to goal...';
+            });
+        }
+    </script>
+</body>
+</html>
+

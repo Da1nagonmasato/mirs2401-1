@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ボタンクリックでリクエスト</title>
+</head>
+<body>
+  <button id="requestButton">リクエストを送信</button>
+
+  <script>
+    document.getElementById("requestButton").addEventListener("click", function() {
+      const url = "https://script.google.com/macros/s/AKfycbyHBJ5GlY-2Fuvl9oGDC0iVF0Vgq2s5SGkIlfo5nScu41xe40c8mglyvSjwSxHAlAosVw/exec"; // 実際のURLに置き換えてください
+
+      const requestParams = {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      };
+
+      fetch(url, requestParams)
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result); // {"status":"OK"}が返ってくる
+        })
+        .catch((e) => console.log(e));
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS 2 2d_pose_estimate Web App</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>ROS 2 2d_pose_estimate Web App</h1>
+    <button id="sendPose">Send 2D Pose Estimate</button>
+
+    <script>
+        // ROS 2 WebSocket接続の設定
+        var ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'  // rosbridgeが起動しているURL
+        });
+
+        // 2d_pose_estimateトピックの設定
+        var poseEstimation = new ROSLIB.Topic({
+            ros: ros,
+            name: '/initialpose',  // トピック名
+            messageType: 'geometry_msgs/PoseWithCovarianceStamped'  // メッセージタイプ
+        });
+
+        // 2D Poseの設定（位置と向き）
+        var poseMsg = new ROSLIB.Message({
+            header: {
+                stamp: { sec: 0, nsec: 0 },  // 時間のスタンプ
+                frame_id: 'map'  // フレームID（ロボットの参照フレーム）
+            },
+            pose: {
+                pose: {
+                    position: {
+                        x: 3.7849,  // x座標（メートル）
+                        y: 0.1125,  // y座標（メートル）
+                        z: 0.0   // z座標（2D空間では通常0）
+                    },
+                    orientation: {
+                        x: 0.0,  // クォータニオン
+                        y: 0.0,
+                        z: 0.0204,  // 45度の向き
+                        w: 0.9997
+                    }
+                },
+                covariance: [
+                    0.1, 0, 0, 0, 0, 0,
+                    0, 0.1, 0, 0, 0, 0,
+                    0, 0, 0.1, 0, 0, 0,
+                    0, 0, 0, 0.1, 0, 0,
+                    0, 0, 0, 0, 0.1, 0,
+                    0, 0, 0, 0, 0, 0.1
+                ]
+            }
+        });
+
+        // 2D Poseを送信するボタンがクリックされたときにメッセージを送信
+        document.getElementById("sendPose").onclick = function() {
+            poseEstimation.publish(poseMsg);
+        };
+    </script>
+</body>
+</html>

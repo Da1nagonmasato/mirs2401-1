@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS 2 Action Web Client</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib"></script>
+</head>
+<body>
+    <h1>ROS 2 Action Web Client</h1>
+    <button id="sendGoalBtn">Send Goal</button>
+
+    <script>
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090' // WebSocketのURL（rosbridge）
+        });
+
+        const actionClient = new ROSLIB.ActionClient({
+            ros: ros,
+            serverName: '/my_action',
+            actionMsg: 'my_interfaces/action/MyAction' // 定義したアクション
+        });
+
+        const sendGoalBtn = document.getElementById('sendGoalBtn');
+        sendGoalBtn.addEventListener('click', () => {
+            const goal = new ROSLIB.Goal({
+                actionClient: actionClient,
+                goalMessage: {} // 必要に応じてゴールメッセージを設定
+            });
+
+            goal.on('result', (result) => {
+                console.log('Received result:', result);
+            });
+
+            goal.send();
+        });
+    </script>
+</body>
+</html>

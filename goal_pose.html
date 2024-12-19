@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS 2 Goal Pose Web App</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>ROS 2 Goal Pose Web App</h1>
+    <button id="sendGoal">Send Goal Pose</button>
+
+    <script>
+        // ROS 2 WebSocket接続の設定
+        var ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'  // rosbridgeが起動しているURL
+        });
+
+        // goal_poseトピックの設定
+        var goalPose = new ROSLIB.Topic({
+            ros: ros,
+            name: '/goal_pose',  // 送信するトピック名
+            messageType: 'geometry_msgs/PoseStamped'  // メッセージタイプ
+        });
+
+        // 移動先の目標位置と向き（位置はx=2, y=3, 向きは0度）
+        var goalMsg = new ROSLIB.Message({
+            header: {
+                stamp: { sec: 0, nsec: 0 },  // 時間のスタンプ
+                frame_id: 'map'  // フレームID（ロボットの参照フレーム）
+            },
+            pose: {
+                position: {
+                    x: 10.5478,  // x座標（メートル）
+                    y: 0.124844,  // y座標（メートル）
+                    z: 0.0   // z座標（2D空間では通常0）
+                },
+                orientation: {
+                    x: 0.0,  // クォータニオン
+                    y: 0.0,
+                    z: 0.0,
+                    w: 1.0   // 向き（0度の場合はw=1）
+                }
+            }
+        });
+
+        // 移動目標を送信するボタンがクリックされたときにメッセージを送信
+        document.getElementById("sendGoal").onclick = function() {
+            goalPose.publish(goalMsg);
+        };
+    </script>
+</body>
+</html>
+
