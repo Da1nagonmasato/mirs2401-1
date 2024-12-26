@@ -1,0 +1,17 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from mirs_msgs/srv/SimpleCommand.srv
+// generated code does not contain a copyright notice
+
+
+module mirs_msgs {
+  module srv {
+    @verbatim (language="comment", text=
+      "リクエスト値なし")
+    struct SimpleCommand_Request {
+      uint8 structure_needs_at_least_one_member;
+    };
+    struct SimpleCommand_Response {
+      boolean success;
+    };
+  };
+};

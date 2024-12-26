@@ -1,0 +1,13 @@
+{
+  "package_name": "mirs_msgs",
+  "non_idl_tuples": [
+    "/var/www/html/mirs_msgs/mirs_msgs:srv/Params.srv",
+    "/var/www/html/mirs_msgs/mirs_msgs:srv/ParameterUpdate.srv",
+    "/var/www/html/mirs_msgs/mirs_msgs:srv/SimpleCommand.srv",
+    "/var/www/html/mirs_msgs/mirs_msgs:srv/BasicCommand.srv",
+    "/var/www/html/mirs_msgs/mirs_msgs:srv/NumberCommand.srv",
+    "/var/www/html/mirs_msgs/mirs_msgs:msg/BasicParam.msg",
+    "/var/www/html/mirs_msgs/mirs_msgs:action/Trigger.action",
+    "/var/www/html/mirs_msgs/mirs_msgs:action/ParameterTrigger.action"
+  ]
+}

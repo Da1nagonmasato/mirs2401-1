@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from mirs_msgs/srv/NumberCommand.srv
+// generated code does not contain a copyright notice
+
+
+module mirs_msgs {
+  module srv {
+    struct NumberCommand_Request {
+      double parameter;
+    };
+    struct NumberCommand_Response {
+      boolean success;
+    };
+  };
+};

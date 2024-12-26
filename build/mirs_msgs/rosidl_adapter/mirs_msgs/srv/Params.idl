@@ -1,0 +1,17 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from mirs_msgs/srv/Params.srv
+// generated code does not contain a copyright notice
+
+
+module mirs_msgs {
+  module srv {
+    struct Params_Request {
+      double a;
+
+      double b;
+    };
+    struct Params_Response {
+      double sum;
+    };
+  };
+};

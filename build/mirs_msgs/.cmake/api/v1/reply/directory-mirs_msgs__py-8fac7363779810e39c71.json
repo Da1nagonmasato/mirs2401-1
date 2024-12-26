@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "mirs_msgs__py",
+		"source" : "/var/www/html/build/mirs_msgs/mirs_msgs__py"
+	}
+}

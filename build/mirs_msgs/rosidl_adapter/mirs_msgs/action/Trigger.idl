@@ -1,0 +1,26 @@
+// generated from rosidl_adapter/resource/action.idl.em
+// with input from mirs_msgs/action/Trigger.action
+// generated code does not contain a copyright notice
+
+
+module mirs_msgs {
+  module action {
+    @verbatim (language="comment", text=
+      "Goal" "\n"
+      "空のリクエストのため空欄")
+    struct Trigger_Goal {
+      uint8 structure_needs_at_least_one_member;
+    };
+    @verbatim (language="comment", text=
+      "Result")
+    struct Trigger_Result {
+      boolean success;
+    };
+    @verbatim (language="comment", text=
+      "Feedback" "\n"
+      "特に必要性を感じなかったので空欄")
+    struct Trigger_Feedback {
+      uint8 structure_needs_at_least_one_member;
+    };
+  };
+};

@@ -1,39 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROS 2 Action Web Client</title>
-    <script src="https://cdn.jsdelivr.net/npm/roslib"></script>
-</head>
-<body>
-    <h1>ROS 2 Action Web Client</h1>
-    <button id="sendGoalBtn">Send Goal</button>
+<script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+<script>
+  const ros = new ROSLIB.Ros({
+    url: 'ws://localhost:9090'
+  });
 
-    <script>
-        const ros = new ROSLIB.Ros({
-            url: 'ws://localhost:9090' // WebSocketのURL（rosbridge）
-        });
+  ros.on('connection', () => {
+    console.log('Connected to websocket server.');
+  });
 
-        const actionClient = new ROSLIB.ActionClient({
-            ros: ros,
-            serverName: '/my_action',
-            actionMsg: 'my_interfaces/action/MyAction' // 定義したアクション
-        });
+  ros.on('error', (error) => {
+    console.error('Error connecting to websocket server:', error);
+  });
 
-        const sendGoalBtn = document.getElementById('sendGoalBtn');
-        sendGoalBtn.addEventListener('click', () => {
-            const goal = new ROSLIB.Goal({
-                actionClient: actionClient,
-                goalMessage: {} // 必要に応じてゴールメッセージを設定
-            });
+  ros.on('close', () => {
+    console.log('Connection to websocket server closed.');
+  });
 
-            goal.on('result', (result) => {
-                console.log('Received result:', result);
-            });
+  // 目標姿勢のパブリッシャーを作成
+  const goalPub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/goal_pose',
+    messageType: 'geometry_msgs/PoseStamped'
+  });
 
-            goal.send();
-        });
-    </script>
-</body>
-</html>
+  // 目標姿勢メッセージの作成
+  const poseMsg = new ROSLIB.Message({
+    header: {
+      frame_id: 'map',
+      stamp: {
+        sec: Math.floor(Date.now() / 1000),
+        nanosec: (Date.now() % 1000) * 1000000
+      }
+    },
+    pose: {
+      position: {
+        x: 1.0,
+        y: 2.0,
+        z: 0.0
+      },
+      orientation: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        w: 1.0
+      }
+    }
+  });
+
+  // ロボットの現在位置をサブスクライブ
+  const poseSub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/amcl_pose',
+    messageType: 'geometry_msgs/PoseWithCovarianceStamped'
+  });
+
+  poseSub.subscribe((message) => {
+    console.log('Current robot position:', message.pose.pose.position);
+  });
+
+  // ナビゲーション状態をサブスクライブ
+  const statusSub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/navigate_to_pose/_action/status',
+    messageType: 'action_msgs/GoalStatusArray'
+  });
+
+  statusSub.subscribe((message) => {
+    if (message.status_list.length > 0) {
+      console.log('Navigation status:', message.status_list[0].status);
+    }
+  });
+
+  // 目標姿勢を送信する関数
+  function sendGoal() {
+    goalPub.publish(poseMsg);
+    console.log('Goal pose published');
+  }
+</script>
+
+<button onclick="sendGoal()">Send Navigation Goal</button>

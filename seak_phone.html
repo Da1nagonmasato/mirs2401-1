@@ -29,6 +29,8 @@
     <button id="increaseButton">次の案内へ</button>
     <button id="stopButton">止める</button>
     <button id="retryButton">リトライ</button>
+    <button id="upmoveButton">上へ</button>
+    <button id="downmoveButton">下へ</button>
 
        
     <script>
@@ -40,6 +42,23 @@
 	const isgetdataElement = document.getElementById('isgetdata');
         const increasebutton = document.getElementById('increaseButton');
         const stopbutton = document.getElementById('increaseButton');
+	const upmovebutton = document.getElementById('upmoveButton');
+	const downmovebutton = document.getElementById('downmoveButton');
+
+        upmoveButton.addEventListener('click', function() {
+			    if((stop == 1)||(counter == -1)){
+            stepmotorupdown(1);
+            }
+		    });
+
+
+	 downmoveButton.addEventListener('click', function() {
+             if((stop == 1)||(counter == -1)){
+             stepmotorupdown(-1);
+             }
+                    });
+
+
 
         increaseButton.addEventListener('click', function() {
         if(resev.length > counter + 1){
@@ -248,6 +267,7 @@
             serviceType: 'lifecycle_msgs/srv/ChangeState'
         });
 
+
         // Deactivateアクションを実行する関数
 	    function deactivateControllerServer() {
             // サービスリクエストを作成
@@ -260,6 +280,37 @@
                 console.log('Result:', result);
                 if (result.success) {
                     alert('Controller Server successfully deactivated.');
+                } else {
+                    alert('Failed to deactivate Controller Server.');
+                }
+            });
+        }
+
+
+	    // `stepmotorClient` サービスクライアントの設定
+        const stepmotorClient = new ROSLIB.Service({
+            ros: ros,
+            name: '/ctrl_updown', // 対象ノードのサービス名
+            serviceType: 'mirs_msgs/srv/BasicCommand'
+        });
+
+
+	    // Deactivateアクションを実行する関数 pose１で上昇-1で下降
+            function stepmotorupdown(pose) {
+            // サービスリクエストを作成
+            const request = new ROSLIB.ServiceRequest({
+                param1: pose, 
+		param2: pose,
+		param3: pose,
+		param4: pose,
+            });
+
+            // サービス呼び出し
+	    console.log("calling motorupdown...");
+            stepmotorClient.callService(request, (result) => {
+                console.log('Result:', result);
+                if (result.success) {
+                    alert('stepping motor moving.');
                 } else {
                     alert('Failed to deactivate Controller Server.');
                 }

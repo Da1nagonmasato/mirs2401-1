@@ -1,0 +1,24 @@
+// generated from rosidl_adapter/resource/action.idl.em
+// with input from mirs_msgs/action/ParameterTrigger.action
+// generated code does not contain a copyright notice
+
+
+module mirs_msgs {
+  module action {
+    @verbatim (language="comment", text=
+      "Goal")
+    struct ParameterTrigger_Goal {
+      float parameter;
+    };
+    @verbatim (language="comment", text=
+      "Result")
+    struct ParameterTrigger_Result {
+      boolean success;
+    };
+    @verbatim (language="comment", text=
+      "Feedback")
+    struct ParameterTrigger_Feedback {
+      float feedback;
+    };
+  };
+};

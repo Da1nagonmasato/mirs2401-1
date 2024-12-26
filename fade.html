@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クリック回数で内容切り替え</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    #fade-text {
+      font-size: 24px;
+      opacity: 0;
+      transform: translateX(-25%);
+    }
+
+    #fade-text.show {
+      opacity: 1;
+      transform: translateX(0);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* アニメーションを追加 */
+    }
+
+    #fade-text.hide {
+      opacity: 0;
+      transform: translateX(25%);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* アニメーションを追加 */
+    }
+
+    #fade-text.reset {
+      opacity: 0;
+      transform: translateX(-125%);
+      transition: none; /* アニメーションなし */
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="fade-text">初期の表示内容</div>
+    <button onclick="toggleFade()">次の内容</button>
+    
+  </div>
+
+  <script>
+    const messages = [
+      "最初のメッセージ",
+      "次のメッセージ",
+      "さらに次のメッセージ",
+      "最後のメッセージ",
+      "1",
+      "2",
+      "3",
+      "4"
+    ];
+
+    let clickCount = 0;
+    let isVisible = false;
+    const textElement = document.getElementById('fade-text');
+
+
+    function toggleFade() {
+      	
+	textElement.classList.remove('show');
+        textElement.classList.add('hide');
+
+	setTimeout(() => {
+	console.log("hide");
+	//clickCount ++; // 配列の長さで循環
+        textElement.textContent = messages[clickCount];
+        textElement.classList.remove('hide');
+	  setTimeout(() => {
+          console.log("reset");
+          textElement.classList.add('reset');
+          textElement.classList.remove('reset');
+	    setTimeout(() => {
+            console.log("show");
+            textElement.classList.add('show');
+            }, 50);
+          }, 50);
+	}, 300);
+        
+	clickCount ++;
+	
+    }
+  
+
+  </script>
+</body>
+</html>
+
