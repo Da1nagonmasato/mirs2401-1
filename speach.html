@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音声読み上げ</title>
+</head>
+<body>
+    <h1>音声読み上げデモ</h1>
+    <textarea id="text-to-speak" rows="5" cols="50" placeholder="ここに読み上げたい文章を入力してください"></textarea>
+    <br><br>
+    <button onclick="speakText()">読み上げる</button>
+    <button onclick="stopSpeech()">停止する</button>
+
+    <script>
+        let synth = window.speechSynthesis;
+        let utterance;
+
+        function speakText() {
+            const text = document.getElementById('text-to-speak').value;
+            if (synth.speaking) {
+                console.warn("既に読み上げ中です");
+                return;
+            }
+            if (text.trim() === "") {
+                alert("文章を入力してください");
+                return;
+            }
+
+            utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "ja-JP"; // 日本語を設定
+            utterance.onend = () => {
+                console.log("読み上げ完了");
+            };
+            utterance.onerror = (event) => {
+                console.error("読み上げ中にエラーが発生しました", event);
+            };
+            synth.speak(utterance);
+        }
+
+        function stopSpeech() {
+            if (synth.speaking) {
+                synth.cancel();
+                console.log("読み上げを停止しました");
+            }
+        }
+    </script>
+</body>
+</html>
+

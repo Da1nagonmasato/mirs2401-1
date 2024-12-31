@@ -1,0 +1,41 @@
+<!DOCTYPE html><!--ロードのたびに高さがちょっと変わったりする-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>MIRS2401</title>
+    <!-- CSSファイルを読み込む -->
+    <link rel="stylesheet" href="gapless.css">
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+      <div class="stroke">
+    <div class="border top"></div>
+    <div class="border right"></div>
+    <div class="border bottom"></div>
+    <div class="border left"></div>
+    <div class="border mask"></div>
+  </div>
+
+  <div class="mask-bg anim">
+    GAPLESS
+  </div>
+
+  <div class="spinner-box">
+    <div class="circle-border">
+     <div class="circle-core"></div>
+    </div>
+  </div>
+  <div class="circle-image"></div>
+  <span id="loadtext" class="loadtext">ロード中</span>
+
+  <div class="fadecontainer">
+  <div id="fade-text">初期の表示内容</div>
+  <button class="fadebutton" onclick="toggleFade()">次の案内</button>
+  <button class="fadebutton" <!--onclick="stop()"-->>案内停止</button>
+  </div>
+
+	    <!-- JavaScriptファイルを読み込む -->
+    <script src="gapless.js"></script>
+</body>
+</html>

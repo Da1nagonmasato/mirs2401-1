@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Screen Stroke Animation</title>
+  <style>
+    /* ベース設定 */
+    /*body {
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #ffffff;
+    }*/
+
+    body {
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #ffffff;
+    }
+
+    /*.stroke {
+      position: absolute;
+      top: 100;
+      left: 100;
+      background: #f0f0ff;
+      /*width: calc(100vw - 40px); /* 横幅: 画面幅 - 余白 */
+      /*height: calc(100vh - 80px); /* 高さ: 画面高さ - 余白 */
+      
+      /*height: 100vh;
+      margin: 0;
+    }*/
+
+      .stroke{
+      position: absolute;
+      top: 3vh;
+      left: 2vw;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 86vh;
+      width: 96vw;
+      background-color: #ffffff;
+      }
+
+    .stroke .border {
+      content: "";
+      position: absolute;
+      opacity: 0;
+    }
+
+    .stroke .border.top,
+    .stroke .border.bottom {
+      width: calc(100% - 20px);
+    }
+
+    .stroke .border.top {
+      border-top: 3px solid #000000;
+      right: 0;
+      top: 0;
+    }
+
+    .stroke .border.mask {
+      width: calc(20%);
+    }
+
+    .stroke .border.mask {
+      border-top: 3px solid #ffffff;
+      right: 65vw;
+      top: 0;
+    }
+
+    .stroke .border.bottom {
+      border-bottom: 3px solid #000000;
+      left: 0;
+      bottom: 0;
+    }
+
+    .stroke .border.right,
+    .stroke .border.left {
+      height: calc(100% - 20px);
+    }
+
+    .stroke .border.right {
+      border-right: 3px solid #000000;
+      right: 0;
+      top: 0;
+    }
+
+    .stroke .border.left {
+      border-left: 3px solid #000000;
+      left: 0;
+      bottom: 0;
+    }
+
+    .stroke.is-animated .border {
+      opacity: 1;
+    }
+
+    
+    .stroke.is-animated .border.top,
+    .stroke.is-animated .border.bottom {
+      animation: stroke-width 3.0s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .stroke.is-animated .border.right,
+    .stroke.is-animated .border.left {
+      animation: stroke-height 3.0s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes stroke-width {
+      0% {
+        width: 0;
+        opacity: 1;
+      }
+      100% {
+        width: calc(100% - 20px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes stroke-height {
+      0% {
+        height: 0;
+        opacity: 1;
+      }
+      100% {
+        height: calc(100% - 20px);
+        opacity: 1;
+      }
+    }
+
+    .mask-bg {
+      color: transparent;
+      display: inline-block;
+      font-size: 36px;
+      font-weight: bold;
+      overflow: hidden;
+      position: absolute;
+      right: 68vw;
+      top: 0.5vh;
+      transition: color 0ms 450ms;
+    }
+
+    .mask-bg::after {
+      /*background: linear-gradient(to right, #362ae0 0%, #3b79cc 50%, #42d3ed 100%);*/
+      background: linear-gradient(to left, #fcfcfc 0%, #000000 100%);
+      bottom: 0;
+      content: '';
+      display: block;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transform: translate(0, 100%);
+    }
+
+    .mask-bg.is-animated {
+      color: #000000;
+    }
+
+    .mask-bg.is-animated::after {
+      animation: mask-bg 1.2s cubic-bezier(0.8, 0, 0.170, 1);
+    }
+
+    @keyframes mask-bg {
+      0% {
+        transform: translate(0, 101%);
+      }
+      40%, 60% {
+        transform: translate(0, 0%);
+      }
+      100% {
+        transform: translate(0, -100%);
+      }
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="stroke">
+    <div class="border top"></div>
+    <div class="border right"></div>
+    <div class="border bottom"></div>
+    <div class="border left"></div>
+    <div class="border mask"></div>
+  </div>
+
+  <div class="mask-bg anim">
+    GAPLESS
+  </div>
+
+  <!--<button onclick="animateBorders()">Start Animation</button>-->
+
+  <script>
+    function animateBorders() {
+      const strokeElement = document.querySelector('.stroke');
+      strokeElement.classList.add('is-animated');
+    }
+   
+    window.onload = () => {
+      const strokeElement = document.querySelector('.stroke');
+      strokeElement.classList.add('is-animated');
+
+      const element = document.querySelector('.mask-bg');
+      setTimeout(() => {
+        element.classList.add('is-animated');
+      }, 100); // アニメーション開始までの遅延（調整可能）
+    };
+  </script>
+</body>
+</html>
+

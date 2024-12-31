@@ -1,0 +1,301 @@
+/* styles.css */
+    /* グリッドスタイリング */
+    * {
+      box-sizing: border-box;
+    }
+
+    /*body {
+      min-height: 100vh;
+      background-color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }*/
+
+    body {
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #ffffff;
+    }
+
+    /*ロード中の表示アイコン*/
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+  to{
+    transform: rotate(359deg);
+  }
+}
+
+
+.spinner-box {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  position: absolute;
+  top: calc(50vh - 75px);
+  left: calc(50vw - 75px);
+}
+
+.circle-border {
+  width: 150px;
+  height: 150px;
+  padding: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: rgb(0,0,0);/*(63,249,220)*/
+  background: linear-gradient(0deg, rgba(0,0,0,0.1) 33%, rgba(0,0,0,1) 100%);
+  animation: spin .8s linear 0s infinite;
+}
+
+    .circle-core {
+      width: 100%;
+      height: 100%;
+      background-color: #ffff00;
+      border-radius: 50%;
+    }
+
+    .circle-image {
+      width: 144px; /* 画像の直径 */
+      height: 144px;
+      border-radius: 50%; /* 円形にする */
+      background-image: url('gaprisu.png'); /* 画像のパス */
+      background-size: cover; /* 画像を要素にフィット */
+      /*background-position: center; /* 中央寄せ */
+      background-repeat: no-repeat;
+      position: absolute;
+      top: calc(50vh - 72px);
+      left: calc(50vw - 72px);
+    }
+
+.toggle-button {
+      position: absolute; /* ボタンの位置を画面内で固定 */
+      bottom: 20px; /* 画面下からの距離 */
+      left: 50%; /* 横位置を画面中央に設定 */
+      transform: translateX(-50%); /* 中央揃え */
+      padding: 10px 20px;
+    font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    .toggle-button:hover {
+      background-color: #0056b3;
+    }
+
+.loadtext{
+      width: 100%;
+      color: #000000;
+      display: inline-block;
+      font-size: 36px;
+      font-weight: bold;
+      position: absolute;
+      right: 0vw;
+      top: 60vh;
+      text-align: center;
+      z-index: 10;
+}
+/*外枠のラインと文字表示*/
+
+  .stroke{
+      position: absolute;
+      top: 3vh;
+      left: 2vw;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 86vh;
+      width: 96vw;
+      background-color: #ffffff;
+      }
+
+    .stroke .border {
+      content: "";
+      position: absolute;
+      opacity: 0;
+    }
+
+    .stroke .border.top,
+    .stroke .border.bottom {
+      width: calc(100% - 20px);
+    }
+
+    .stroke .border.top {
+      border-top: 3px solid #000000;
+      right: 0;
+      top: 0;
+    }
+
+    .stroke .border.mask {
+      width: calc(20%);
+    }
+
+    .stroke .border.mask {
+      border-top: 3px solid #ffffff;
+      right: 65vw;
+      top: 0;
+    }
+
+    .stroke .border.bottom {
+      border-bottom: 3px solid #000000;
+      left: 0;
+      bottom: 0;
+    }
+
+    .stroke .border.right,
+    .stroke .border.left {
+      height: calc(100% - 20px);
+    }
+
+    .stroke .border.right {
+      border-right: 3px solid #000000;
+      right: 0;
+      top: 0;
+    }
+
+    .stroke .border.left {
+      border-left: 3px solid #000000;
+      left: 0;
+      bottom: 0;
+    }
+
+    .stroke.is-animated .border {
+      opacity: 1;
+    }
+
+    .stroke.is-animated .border.top,
+    .stroke.is-animated .border.bottom {
+      animation: stroke-width 3.0s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .stroke.is-animated .border.right,
+    .stroke.is-animated .border.left {
+      animation: stroke-height 3.0s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes stroke-width {
+      0% {
+        width: 0;
+        opacity: 1;
+      }
+      100% {
+        width: calc(100% - 20px);
+        opacity: 1;
+      }
+    }
+
+    @keyframes stroke-height {
+      0% {
+        height: 0;
+        opacity: 1;
+      }
+      100% {
+        height: calc(100% - 20px);
+        opacity: 1;
+      }
+    }
+
+    .mask-bg {
+      color: transparent;
+      display: inline-block;
+      font-size: 36px;
+      font-weight: bold;
+      overflow: hidden;
+      position: absolute;
+      right: 68vw;
+      top: 0.5vh;
+      transition: color 0ms 450ms;
+    }
+
+    .mask-bg::after {
+      /*background: linear-gradient(to right, #362ae0 0%, #3b79cc 50%, #42d3ed 100%);*/
+      background: linear-gradient(to left, #fcfcfc 0%, #000000 100%);
+      bottom: 0;
+      content: '';
+      display: block;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transform: translate(0, 100%);
+    }
+
+    .mask-bg.is-animated {
+      color: #000000;
+    }
+
+    .mask-bg.is-animated::after {
+      animation: mask-bg 1.2s cubic-bezier(0.8, 0, 0.170, 1);
+    }
+
+    @keyframes mask-bg {
+      0% {
+        transform: translate(0, 101%);
+      }
+      40%, 60% {
+        transform: translate(0, 0%);
+      }
+      100% {
+        transform: translate(0, -100%);
+      }
+    }
+
+/*案内場所の表示スタイル*/
+    #fade-text {
+      font-size: 60px;
+      opacity: 0;
+      transform: translateX(-15%);
+    }
+
+    #fade-text.show {
+      opacity: 1;
+      transform: translateX(-0%);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* アニメーションを追加 */
+    }
+
+    #fade-text.hide {
+      opacity: 0;
+      transform: translateX(15%);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* アニメーションを追加 */
+    }
+
+    #fade-text.reset {
+      opacity: 0;
+      transform: translateX(-15%);
+      transition: none; /* アニメーションなし */
+    }
+
+    .fadecontainer {
+      position: absolute; /* 今の位置を基準 */
+      top: 59vh; /* 上から10px */
+      left: 4vw; /* 左から20px */
+    }
+
+    .fadebutton {
+      margin-top: 20px;
+      padding: 30px 40px;
+      font-size: 32px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      z-index: 10;
+    }

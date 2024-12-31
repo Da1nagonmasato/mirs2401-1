@@ -59,7 +59,7 @@
   });
 
   // ナビゲーション状態をサブスクライブ
-  const statusSub = new ROSLIB.Topic({
+  /*const statusSub = new ROSLIB.Topic({
     ros: ros,
     name: '/navigate_to_pose/_action/status',
     messageType: 'action_msgs/GoalStatusArray'
@@ -69,13 +69,79 @@
     if (message.status_list.length > 0) {
       console.log('Navigation status:', message.status_list[0].status);
     }
-  });
+  });*/
 
   // 目標姿勢を送信する関数
   function sendGoal() {
     goalPub.publish(poseMsg);
     console.log('Goal pose published');
   }
-</script>
 
+  const cancelPub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/navigate_to_pose/_action/cancel_goal',
+    messageType: 'action_msgs/CancelGoal'
+  });
+
+  // キャンセルメッセージを送信する関数
+  function cancelNavigation() {
+    const cancelMsg = new ROSLIB.Message({
+      goal_info: {
+        goal_id: {
+          uuid: new Array(16).fill(0)  // すべてのゴールをキャンセル
+        },
+        stamp: {
+          sec: Math.floor(Date.now() / 1000),
+          nanosec: (Date.now() % 1000) * 1000000
+        }
+      }
+    });
+    
+    cancelPub.publish(cancelMsg);
+    console.log('Cancel request sent');
+  }
+
+  // ナビゲーション状態をモニターする
+  const statusSub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/navigate_to_pose/_action/status',
+    messageType: 'action_msgs/GoalStatusArray'
+  });
+
+  statusSub.subscribe((message) => {
+    if (message.status_list.length > 0) {
+      const status = message.status_list[0].status;
+      console.log('Navigation status:', status);
+      // ステータスコード：
+      // 1: 実行中
+      // 2: キャンセル済み
+      // 4: 成功
+      // 5: 失敗
+      updateStatus(status);
+    }
+  });
+
+  function updateStatus(status) {
+    const statusText = document.getElementById('navigationStatus');
+    if (statusText) {
+      switch (status) {
+        case 1:
+          statusText.textContent = 'Status: Executing';
+          break;
+        case 2:
+          statusText.textContent = 'Status: Cancelled';
+          break;
+        case 4:
+          statusText.textContent = 'Status: Succeeded';
+          break;
+        case 5:
+          statusText.textContent = 'Status: Failed';
+          break;
+        default:
+          statusText.textContent = 'Status: Unknown';
+      }
+    }
+  }
+</script>
+<button onclick="cancelNavigation()">Cancel Navigation</button>
 <button onclick="sendGoal()">Send Navigation Goal</button>

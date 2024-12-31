@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音声認識デモ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>音声認識デモ</h1>
+        <button onclick="startRecognition()">音声を開始</button>
+        <div id="output" placeholder="ここに文字起こしが表示されます"></div>
+    </div>
+
+    <script>
+        function startRecognition() {
+            const outputDiv = document.getElementById('output');
+
+            // Web Speech APIの利用をチェック
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                outputDiv.textContent = "このブラウザは音声認識をサポートしていません。";
+                return;
+            }
+
+            // 音声認識の設定
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ja-JP'; // 日本語認識
+            recognition.interimResults = true; // 暫定結果を有効にする
+            recognition.continuous = false; // 継続認識モードを無効にする
+
+            // 音声認識イベント
+            recognition.onstart = () => {
+                outputDiv.textContent = "音声認識を開始しました...";
+            };
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (const result of event.results) {
+                    transcript += result[0].transcript;
+                }
+                outputDiv.textContent = transcript;
+            };
+
+            recognition.onerror = (event) => {
+                outputDiv.textContent = `エラー: ${event.error}`;
+            };
+
+            recognition.onend = () => {
+                outputDiv.textContent += "\n音声認識を終了しました。";
+            };
+
+            // 音声認識を開始
+            recognition.start();
+        }
+    </script>
+</body>
+</html>
+

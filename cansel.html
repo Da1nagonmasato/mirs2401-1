@@ -1,0 +1,101 @@
+<script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+<script>
+  const ros = new ROSLIB.Ros({
+    url: 'ws://localhost:9090'
+  });
+
+  ros.on('connection', () => {
+    console.log('Connected to websocket server.');
+  });
+
+  ros.on('error', (error) => {
+    console.error('Error connecting to websocket server:', error);
+  });
+
+  ros.on('close', () => {
+    console.log('Connection to websocket server closed.');
+  });
+
+  // キャンセルのパブリッシャーを作成
+  const cancelPub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/navigate_to_pose/_action/cancel',  // 標準的なキャンセルトピック
+    messageType: 'action_msgs/msg/GoalInfo'
+  });
+
+  // キャンセルメッセージを送信する関数
+  function cancelNavigation() {
+    const cancelMsg = new ROSLIB.Message({
+      stamp: {
+        sec: Math.floor(Date.now() / 1000),
+        nanosec: (Date.now() % 1000) * 1000000
+      }
+    });
+    
+    cancelPub.publish(cancelMsg);
+    console.log('Cancel request sent');
+
+    // バックアップとして速度ゼロコマンドを送信
+    stopRobot();
+  }
+
+  // 速度ゼロコマンドのパブリッシャー
+  const cmdVelPub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/cmd_vel',
+    messageType: 'geometry_msgs/Twist'
+  });
+
+  // ロボットを停止させる関数
+  function stopRobot() {
+    const stopMsg = new ROSLIB.Message({
+      linear: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+      },
+      angular: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0
+      }
+    });
+    
+    cmdVelPub.publish(stopMsg);
+    console.log('Stop command sent');
+  }
+
+  // ナビゲーション状態の監視
+  const statusSub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/navigate_to_pose/_action/status',
+    messageType: 'action_msgs/GoalStatusArray'
+  });
+
+  statusSub.subscribe((message) => {
+    if (message.status_list && message.status_list.length > 0) {
+      const status = message.status_list[0].status;
+      updateStatus(status);
+    }
+  });
+
+  function updateStatus(status) {
+    const statusElement = document.getElementById('navStatus');
+    if (statusElement) {
+      let statusText = 'Unknown';
+      switch (status) {
+        case 1: statusText = 'Executing'; break;
+        case 2: statusText = 'Canceled'; break;
+        case 4: statusText = 'Succeeded'; break;
+        case 5: statusText = 'Failed'; break;
+      }
+      statusElement.textContent = `Navigation Status: ${statusText}`;
+    }
+  }
+</script>
+
+<div style="margin: 10px; padding: 10px; border: 1px solid #ccc;">
+  <button onclick="cancelNavigation()" style="padding: 5px 10px; margin-right: 10px;">Cancel Navigation</button>
+  <button onclick="stopRobot()" style="padding: 5px 10px;">Emergency Stop</button>
+  <div id="navStatus" style="margin-top: 10px;">Navigation Status: Not Started</div>
+</div>

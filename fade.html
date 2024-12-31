@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <title>クリック回数で内容切り替え</title>
   <style>
     body {
+      overflow: hidden;
       font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
@@ -16,37 +17,40 @@
     }
 
     .container {
-      text-align: center;
+      position: absolute; /* 今の位置を基準 */
+      top: 400px; /* 上から10px */
+      left: 100px; /* 左から20px */
+   
     }
 
     #fade-text {
-      font-size: 24px;
+      font-size: 60px;
       opacity: 0;
-      transform: translateX(-25%);
+      transform: translateX(-15%);
     }
 
     #fade-text.show {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateX(-0%);
       transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* アニメーションを追加 */
     }
 
     #fade-text.hide {
       opacity: 0;
-      transform: translateX(25%);
+      transform: translateX(15%);
       transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* アニメーションを追加 */
     }
 
     #fade-text.reset {
       opacity: 0;
-      transform: translateX(-125%);
+      transform: translateX(-15%);
       transition: none; /* アニメーションなし */
     }
 
     button {
       margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 30px 40px;
+      font-size: 32px;
       cursor: pointer;
       border: none;
       background-color: #007bff;
@@ -55,23 +59,23 @@
       transition: background-color 0.3s;
     }
 
-    button:hover {
-      background-color: #0056b3;
-    }
   </style>
 </head>
 <body>
+
+  
+
   <div class="container">
     <div id="fade-text">初期の表示内容</div>
-    <button onclick="toggleFade()">次の内容</button>
-    
+    <button onclick="toggleFade()">次の案内</button>
+    <button onclick="stop()">案内停止</button>
   </div>
 
   <script>
     const messages = [
       "最初のメッセージ",
-      "次のメッセージ",
-      "さらに次のメッセージ",
+      "地点A → 地点B",
+      "地点A → 地点B",
       "最後のメッセージ",
       "1",
       "2",

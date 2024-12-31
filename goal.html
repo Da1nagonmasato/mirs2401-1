@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMCL Pose & Status Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .status {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AMCL Pose & Status Viewer</h1>
+    <div>
+        <strong>Current Pose:</strong>
+        <p id="pose">Waiting for data...</p>
+    </div>
+    <div class="status">
+        <strong>Navigation Status:</strong>
+        <p id="status">Waiting for data...</p>
+    </div>
+    <button onclick="sendGoal()">Send Navigation Goal</button>
+    <script>
+	let current_pose = {Pos_x:0.0,Pos_y:0.0,Pos_z:0.0,Ang_x:0.0,Ang_y:0.0,Ang_z:0.0,Ang_w:0.0};
+        // Connect to rosbridge WebSocket
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090'
+        });
+
+        ros.on('connection', () => {
+            console.log('Connected to rosbridge server.');
+        });
+
+        ros.on('error', (error) => {
+            console.error('Error connecting to rosbridge:', error);
+        });
+
+        ros.on('close', () => {
+            console.log('Connection to rosbridge closed.');
+        });
+
+        // Subscribe to /amcl_pose
+        const amclPoseTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/amcl_pose',
+            messageType: 'geometry_msgs/PoseWithCovarianceStamped'
+        });
+
+        amclPoseTopic.subscribe((message) => {
+
+
+	   const position = message.pose.pose.position;
+           const orientation = message.pose.pose.orientation;
+
+	   current_pose = {
+			   Pos_x:position.x,
+			   Pos_y:position.y,
+			   Pos_z:position.z,
+			   Ang_x:orientation.x,
+			   Ang_y:orientation.y,
+			   Ang_z:orientation.z,
+			   Ang_w:orientation.w
+		       }
+             console.log(current_pose);
+
+            // Display the pose
+            document.getElementById('pose').innerText = `
+                Position: 
+                x = ${position.x.toFixed(2)}, 
+                y = ${position.y.toFixed(2)}, 
+                z = ${position.z.toFixed(2)}
+
+                Orientation: 
+                x = ${orientation.x.toFixed(2)}, 
+                y = ${orientation.y.toFixed(2)}, 
+                z = ${orientation.z.toFixed(2)}, 
+                w = ${orientation.w.toFixed(2)}
+            `;
+        });
+
+        // Subscribe to /navigate_to_pose/_action/status
+        const statusTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/navigate_to_pose/_action/status',
+            messageType: 'action_msgs/GoalStatusArray'
+        });
+
+        statusTopic.subscribe((message) => {
+            const statusList = message.status_list;
+            if (statusList.length === 0) {
+                document.getElementById('status').innerText = "No active goals.";
+                return;
+            }
+
+            const latestStatus = statusList[statusList.length - 1].status;
+
+            // Convert status code to readable text
+            const statusText = {
+                0: "UNKNOWN",
+                1: "ACCEPTED",
+                2: "EXECUTING",
+                3: "CANCELING",
+                4: "SUCCEEDED",
+                5: "CANCELED",
+                6: "ABORTED"
+            }[latestStatus] || "INVALID STATUS";
+
+            document.getElementById('status').innerText = `Status: ${statusText}`;
+        });
+
+	 var goalPub = new ROSLIB.Topic({
+    ros: ros,
+    name: '/goal_pose',
+    messageType: 'geometry_msgs/PoseStamped'
+  });
+	    function sendGoal() {
+				 const poseMsg = new ROSLIB.Message({
+    header: {
+      frame_id: 'map',
+      stamp: {
+        sec: Math.floor(Date.now() / 1000),
+        nanosec: (Date.now() % 1000) * 1000000
+      }
+    },
+    pose: {
+      position: {
+        x: current_pose.Pos_x,
+        y: current_pose.Pos_y,
+        z: current_pose.Pos_z
+      },
+      orientation: {
+        x: current_pose.Ang_x,
+        y: current_pose.Ang_y,
+        z: current_pose.Ang_z,
+        w: current_pose.Ang_w
+      }
+    }
+  });
+    goalPub.publish(poseMsg);
+    console.log('Goal pose published');
+  }
+    </script>
+</body>
+</html>
+

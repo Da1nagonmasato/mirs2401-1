@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JeminiAPI Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>JeminiAPI Demo</h1>
+    <button onclick="fetchResponse()">質問を送信</button>
+    <div id="response">ここに応答が表示されます</div>
+
+    <script>
+        function fetchResponse() {
+            const url = "https://generativelanguage.googleapis.com/v1beta2/models/gemini-1.5-flash-latest:generateMessage";
+
+            const requestParams = {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "AIzaSyAA9OOgj6qrZMG6lLRrdQUoBcEWXZVxTFk", // APIキーを入力
+                },
+                body: JSON.stringify({
+                    prompt: {
+                        messages: [
+                            { content: "Explain how AI works", author: "user" }, // 質問内容
+                        ],
+                    },
+                }),
+            };
+
+            fetch(url, requestParams)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((result) => {
+                    const responseText = result.candidates[0]?.content || "応答なし";
+                    document.getElementById("response").textContent = responseText;
+                })
+                .catch((error) => {
+                    console.error("エラー:", error);
+                    document.getElementById("response").textContent = "エラー: " + error.message;
+                });
+        }
+    </script>
+</body>
+</html>
+

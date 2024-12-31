@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>円形の画像を表示</title>
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0; /* 背景色 */
+    }
+
+    .circle-image {
+      width: 150px; /* 画像の直径 */
+      height: 150px;
+      border-radius: 50%; /* 円形にする */
+      background-image: url('gaprisu.png'); /* 画像のパス */
+      background-size: cover; /* 画像を要素にフィット */
+      background-position: center; /* 中央寄せ */
+      background-repeat: no-repeat;
+    }
+  </style>
+</head>
+<body>
+  <div class="circle-image"></div>
+</body>
+</html>
+
