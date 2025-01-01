@@ -117,6 +117,8 @@
 
             recognition.onend = () => {
                 outputDiv.textContent = recognizedText + "\n音声認識を終了しました。";
+                // 音声認識終了後、自動的に応答を取得
+                getGeminiResponse();
             };
 
             recognition.start();
@@ -129,7 +131,7 @@
                 return;
             }
 
-            const apiKey = "AIzaSyAA9OOgj6qrZMG6lLRrdQUoBcEWXZVxTFk"; // APIキーを設定
+            const apiKey = "AIzaSyAA9OOgj6qrZMG6lLRrdQUoBcEWXZVxTFk";
             const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
             const system_prompt = 
         "あなたは沼津高専について質問をする中学生に向けて、質問を受けて沼津高専について説明・案内を行います。100文字程度で、親しみやすい口調で回答してください。以下に質問を示します";
@@ -158,12 +160,13 @@
                 const data = await response.json();
                 const responseText = data.candidates[0].content.parts[0].text;
                 document.getElementById("response-output").textContent = responseText;
+                speakResponse();
             } catch (error) {
                 document.getElementById("response-output").textContent = `Error: ${error.message}`;
             }
         }
 
-        // 音声読み上げ機能
+        // 音声読み上げ機能//safariのアプリの設定から自動再生をオンにする
         function speakResponse() {
             const text = document.getElementById('response-output').textContent;
             
