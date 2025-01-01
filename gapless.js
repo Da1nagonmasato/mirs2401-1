@@ -1,5 +1,5 @@
 // script.js
-    let resev = [];
+ 
 　　//ロード中のアイコン
     const imageElement = document.querySelector('.circle-image');
     const spinnerboxElement = document.querySelector('.spinner-box');
@@ -7,19 +7,12 @@
     const circlecoreElement = document.querySelector('.circle-core');
     const toggleButton = document.querySelector('.toggle-button');
     const loadtextElement = document.getElementById('loadtext');
-
-    const messages = [
-      "最初のメッセージ",
-      "地点A → 地点B",
-      "地点A → 地点B",
-      "最後のメッセージ",
-      "1",
-      "2",
-      "3",
-      "4"
-    ];
-    let clickCount = 0;
+    
+    var resev = [];
+    const messages = [];
+    let clickCount = -1;
     const textElement = document.getElementById('fade-text');
+    const textmarginElement = document.getElementById('fade-text-margin');
     /*toggleButton.addEventListener('click', () => {
       if (imageElement.style.display === 'none' || imageElement.style.display === '') {
         imageElement.style.display = 'block'; // 画像を表示
@@ -54,6 +47,7 @@
           "Content-Type": "application/x-www-form-urlencoded",
         },
       };
+      
 
       fetch(url, requestParams)
         .then((response) => response.json())
@@ -91,6 +85,18 @@ var ros = new ROSLIB.Ros({
 　
 　function loadfinish(){
   console.log(resev);
+       messages.push("待機場所");	
+      for (  var i = 0;  i < resev.length;  i++  ) {
+       if(i != 0){
+	messages.push(resev[i - 1].location + " → " + resev[i].location);
+       }
+       //messages.push(resev[i].location);
+       //messages.push(resev[i - 1].location + " → " + resev[i].location);
+       console.log ( resev[i].location );
+      }
+	messages.push("待機場所");
+	console.log(messages);
+	console.log(resev);
 //ロードアイコンを非表示
   imageElement.style.display = 'none'; // 画像を非表示
         spinnerboxElement.style.display = 'none';
@@ -106,6 +112,8 @@ var ros = new ROSLIB.Ros({
       setTimeout(() => {
         element.classList.add('is-animated');
       }, 100); // アニメーション開始までの遅延（調整可能）
+	
+     toggleFade();
 }
 
   //画面ズームを禁止する
@@ -114,14 +122,26 @@ var ros = new ROSLIB.Ros({
   });
 
 
-    function toggleFade() {//案内の進行
+document.addEventListener('touchmove', function(event) {//画面スクロール禁止
+    event.preventDefault();
+}, { passive: false });
 
+
+    function toggleFade() {//案内の進行
+     if(messages.length - 1 > clickCount){
         textElement.classList.remove('show');
         textElement.classList.add('hide');
+
+	if((clickCount >= 0) && (messages.length - 2 > clickCount))goalpose(resev[clickCount + 1].x,resev[clickCount + 1].y,resev[clickCount + 1].z,resev[clickCount + 1].w);//goal_poseトピックの送信
 
         setTimeout(() => {
         console.log("hide");
         //clickCount ++; // 配列の長さで循環
+	let fontSize = Math.max(30, 68 - messages[clickCount].length * 2);
+	//let lineHeight = fontSize * 1.2;
+	textElement.style.fontSize = `${fontSize}px`;
+	//textElement.style.lineHeight = `${lineHeight}px`;
+	//textmarginElement.style.fontSize = `${60 - fontSize}px`;
         textElement.textContent = messages[clickCount];
         textElement.classList.remove('hide');
           setTimeout(() => {
@@ -136,5 +156,5 @@ var ros = new ROSLIB.Ros({
         }, 300);
 
         clickCount ++;
-
+     }
     }

@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>音声チャットアプリ</title>
     <style>
+        /* 提供されたベーススタイル */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-x: hidden; /* 横スクロールを防止 */
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: flex-end;
         }
@@ -87,6 +91,7 @@
     </style>
 </head>
 <body>
+    <!-- 以下のスクリプトとHTMLは前回と同じ -->
     <div class="container">
         <h1>音声チャットアプリ</h1>
         
@@ -102,6 +107,7 @@
     </div>
 
     <script>
+        // 前回と同じJavaScriptコード
         let synth = window.speechSynthesis;
         let utterance;
         let recognizedText = '';
@@ -210,7 +216,6 @@
         }
 
         function speakResponse(text) {
-	    stopSpeech();
             if (synth.speaking) {
                 console.warn("既に読み上げ中です");
                 return;

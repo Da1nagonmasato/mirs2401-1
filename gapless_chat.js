@@ -1,114 +1,12 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>音声チャットアプリ</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: flex-end;
-        }
-        .container {
-            width: 50%;
-            background: #fff;
-            padding: 20px;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            box-sizing: border-box;
-            position: fixed;
-            right: 0;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin: 0 0 20px 0;
-        }
-        .chat-container {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .message {
-            margin: 10px 0;
-            padding: 10px 15px;
-            border-radius: 15px;
-            max-width: 70%;
-            word-wrap: break-word;
-        }
-        .user-message {
-            background-color: #007BFF;
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 5px;
-        }
-        .ai-message {
-            background-color: #e9ecef;
-            color: black;
-            margin-right: auto;
-            border-bottom-left-radius: 5px;
-        }
-        .button-group {
-            text-align: center;
-            margin: 20px 0;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .status-indicator {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            margin: 10px 0;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>音声チャットアプリ</h1>
-        
-        <div class="chat-container" id="chat-container">
-            <!-- チャットメッセージがここに追加されます -->
-        </div>
+//script
 
-        <div class="button-group">
-            <button onclick="initializeAndStart()">音声入力を開始</button>
-            <button onclick="stopSpeech()">読み上げを停止</button>
-        </div>
-        <div class="status-indicator" id="status-indicator"></div>
-    </div>
-
-    <script>
         let synth = window.speechSynthesis;
         let utterance;
         let recognizedText = '';
         const chatContainer = document.getElementById('chat-container');
         const statusIndicator = document.getElementById('status-indicator');
         let isInitialized = false;
-
+        statusIndicator.textContent = "待機中";
         function initializeAndStart() {
             if (!isInitialized) {
                 const silence = new SpeechSynthesisUtterance('');
@@ -128,7 +26,7 @@
 
         function startRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
+
             if (!SpeechRecognition) {
                 statusIndicator.textContent = "このブラウザは音声認識をサポートしていません。";
                 return;
@@ -174,11 +72,11 @@
 
             const apiKey = "AIzaSyAA9OOgj6qrZMG6lLRrdQUoBcEWXZVxTFk";
             const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
-            const system_prompt = 
+            const system_prompt =
         "あなたは沼津高専について質問をする中学生に向けて、質問を受けて沼津高専について説明・案内を行います。100文字程度で、親しみやすい口調で回答してください。以下に質問を示します";
-            const PRESET_KNOWLEDGE = 
-"以下に示す事前知識を参考に回答を考えてください。沼津高専は静岡県沼津市にある工業高等専門学校で、ここでは、様々な工学分野を学べるカリキュラムが用意されています。電子制御工学科、電気電子工学科、制御情報工学科、機械工学科、物質工学科がある。"
-   
+            const PRESET_KNOWLEDGE =
+"以下に示す事前知識を参考に回答を考えてください。沼津高専は静岡県沼津市にある工業高等専門学校で、ここでは、様々な工学分野を学べるカリキュラムが用意されてい>ます。電子制御工学科、電気電子工学科、制御情報工学科、機械工学科、物質工学科がある。"
+
             try {
                 statusIndicator.textContent = "応答を生成中...";
                 const response = await fetch(url, {
@@ -210,7 +108,7 @@
         }
 
         function speakResponse(text) {
-	    stopSpeech();
+            stopSpeech();
             if (synth.speaking) {
                 console.warn("既に読み上げ中です");
                 return;
@@ -227,7 +125,7 @@
 
             utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = "ja-JP";
-            
+
             utterance.onend = () => {
                 statusIndicator.textContent = "読み上げ完了";
             };
@@ -246,6 +144,3 @@
                 statusIndicator.textContent = "読み上げを停止しました";
             }
         }
-    </script>
-</body>
-</html>

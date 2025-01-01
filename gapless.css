@@ -12,7 +12,7 @@
       align-items: center;
     }*/
 
-    body {
+    /*body {
       overflow: hidden;
       font-family: Arial, sans-serif;
       display: flex;
@@ -20,8 +20,18 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #ffffff;
-    }
+      background-color: #00ffff;
+    }*/
+
+    html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden; /* 横スクロールを防止 */
+    
+}
 
     /*ロード中の表示アイコン*/
 
@@ -45,6 +55,7 @@
   position: absolute;
   top: calc(50vh - 75px);
   left: calc(50vw - 75px);
+  z-index: 10;
 }
 
 .circle-border {
@@ -78,6 +89,7 @@
       position: absolute;
       top: calc(50vh - 72px);
       left: calc(50vw - 72px);
+      z-index: 11;
     }
 
 .toggle-button {
@@ -147,7 +159,7 @@
     }
 
     .stroke .border.mask {
-      border-top: 3px solid #ffffff;
+      border-top: 4px solid #ffffff;
       right: 65vw;
       top: 0;
     }
@@ -218,7 +230,7 @@
       font-weight: bold;
       overflow: hidden;
       position: absolute;
-      right: 68vw;
+      right: 68.5vw;
       top: 0.5vh;
       transition: color 0ms 450ms;
     }
@@ -258,8 +270,16 @@
 
 /*案内場所の表示スタイル*/
     #fade-text {
+      height: 80px;
       font-size: 60px;
       opacity: 0;
+      transform: translateX(-15%);
+    }
+
+    #fade-text-margin {
+
+      font-size: 0px;
+      opacity: 1;
       transform: translateX(-15%);
     }
 
@@ -282,9 +302,9 @@
     }
 
     .fadecontainer {
-      position: absolute; /* 今の位置を基準 */
-      top: 59vh; /* 上から10px */
-      left: 4vw; /* 左から20px */
+      position: absolute;
+      top: 60.5vh;
+      left: 4vw;
     }
 
     .fadebutton {

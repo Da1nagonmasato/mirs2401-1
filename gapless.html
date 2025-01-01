@@ -6,6 +6,7 @@
     <title>MIRS2401</title>
     <!-- CSSファイルを読み込む -->
     <link rel="stylesheet" href="gapless.css">
+    <link rel="stylesheet" href="gapless_chat.css">
     <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
 </head>
 <body>
@@ -31,11 +32,26 @@
 
   <div class="fadecontainer">
   <div id="fade-text">初期の表示内容</div>
+  
   <button class="fadebutton" onclick="toggleFade()">次の案内</button>
   <button class="fadebutton" <!--onclick="stop()"-->>案内停止</button>
   </div>
 
+    <div class="chatcontainer">
+
+        <div class="chat-container" id="chat-container">
+            <!-- チャットメッセージがここに追加されます -->
+        </div>
+        <div class="status-indicator" id="status-indicator"></div>
+        <div class="button-group">
+            <button onclick="initializeAndStart()" class ="chat_button">音声入力を開始</button>
+            <button onclick="stopSpeech()" class ="chat_button">読み上げを停止</button>
+        </div>
+
+    </div>
 	    <!-- JavaScriptファイルを読み込む -->
     <script src="gapless.js"></script>
+    <script src="gapless_chat.js"></script>
+    <script src="gapless_ros.js"></script>
 </body>
 </html>
