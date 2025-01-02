@@ -1,7 +1,7 @@
 /* styles.css */
         .chatcontainer {
             width: 53%;
-	    height: 90.35%;
+	    height: 86.5%;
             background: #fff;
             padding: 10px;
             box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
@@ -12,7 +12,15 @@
             top: 5vh;
             left: 44vw; 
 	    z-index: 5;
+	    opacity: 0;
+	    transform: translateX(-15%);
         }
+
+	.chatcontainer.show {
+      opacity: 1;
+      transform: translateX(-0%);
+      transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out; /* アニメーションを追加 */
+    }
 
         .chat-container {
             flex-grow: 1;
@@ -48,13 +56,15 @@
 
         .chat_button {
             padding: 30px 20px;
-            background-color: #007BFF;
+            /*background-color: #007BFF;*/
+	    background-color: #050505;
             color: white;
             border: none;
             border-radius: 4px;
             font-size: 32px;
             cursor: pointer;
             margin: 3px;
+	    opacity: 1;
         }
         .chat_button:hover {
             background-color: #0056b3;

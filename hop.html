@@ -1,56 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文字が跳ねるエフェクト</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>動的な文字アニメーション</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
 
-        .bounce-text {
-            display: flex;
-            font-size: 3rem;
-            font-weight: bold;
-        }
+    .bounce-text {
+      display: inline-block;
+      position: relative;
+    }
 
-        .bounce-text span {
-            display: inline-block;
-            animation: bounce 5s ease infinite;
-        }
+    .bounce-text span {
+      display: inline-block;
+      animation: bounce 5s ease-in-out infinite;
+    }
 
-        .bounce-text span:nth-child(1) {
-            animation-delay: -0.5s;
-        }
-
-        .bounce-text span:nth-child(2) {
-            animation-delay: -0.25s;
-        }
-
-        @keyframes bounce {
-            0%, 10%, 100% {
-                transform: translateY(0);
-            }
-            6% {
-                transform: translateY(-10px);
-            }
-        }
-    </style>
+    @keyframes bounce {
+      0%, 10%, 100% {
+        transform: translateY(0);
+      }
+      5% {
+        transform: translateY(-10px);
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="bounce-text" id="bounceText"></div>
 
-    <div class="bounce-text">
-        <span>案</span>
-        <span>内</span>
-        <span>中</span>
-    </div>
+  <script>
+    // 動的に文字列を追加する関数
+    function animateText(text) {
+      const container = document.getElementById('bounceText');
+      container.innerHTML = ''; // 前の文字をクリア
 
+      // 各文字に<span>タグを追加して、アニメーションを適用
+      text.split('').forEach((char, index) => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        span.style.animationDelay = `${index * 0.1}s`; // アニメーションの遅延を設定
+        container.appendChild(span);
+      });
+    }
+
+    // 初期の文字列を設定
+    animateText('こんにちは、世界！');
+
+    // 文字数を動的に変化させる場合（例えばボタンで変更）
+    /*setTimeout(() => {
+      animateText('さようなら！');
+    }, 5000); */// 5秒後に文字列を変更
+  </script>
 </body>
 </html>

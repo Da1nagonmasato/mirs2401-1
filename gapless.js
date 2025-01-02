@@ -7,7 +7,9 @@
     const circlecoreElement = document.querySelector('.circle-core');
     const toggleButton = document.querySelector('.toggle-button');
     const loadtextElement = document.getElementById('loadtext');
-    
+    const fadeElement = document.getElementById('fadecontainer');
+    const chatElement = document.getElementById('chatcontainer');
+    const optElement = document.getElementById("optcontainer");
     var resev = [];
     const messages = [];
     let clickCount = -1;
@@ -59,6 +61,8 @@
         .catch((e) => loadfinish());
 
     };
+
+
 　
 var ros = new ROSLIB.Ros({
           url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
@@ -112,7 +116,7 @@ var ros = new ROSLIB.Ros({
       setTimeout(() => {
         element.classList.add('is-animated');
       }, 100); // アニメーション開始までの遅延（調整可能）
-	
+ 
      toggleFade();
 }
 
@@ -154,6 +158,16 @@ document.addEventListener('touchmove', function(event) {//画面スクロール�
             }, 50);
           }, 50);
         }, 300);
+
+	chatElement.classList.add('show');
+
+	setTimeout(() => {
+	 fadeElement.classList.add('show');
+	}, 400);
+
+        setTimeout(() => {
+	 optElement.classList.add('show');
+        }, 500);
 
         clickCount ++;
      }

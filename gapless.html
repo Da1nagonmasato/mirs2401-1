@@ -30,14 +30,24 @@
   <div class="circle-image"></div>
   <span id="loadtext" class="loadtext">ロード中</span>
 
-  <div class="fadecontainer">
+  <div class="fadecontainer" id="fadecontainer">
+  
+  <div class="nav2status">
+        <p id="status">Waiting for data...</p>
+    </div>
+
   <div id="fade-text">初期の表示内容</div>
   
   <button class="fadebutton" onclick="toggleFade()">次の案内</button>
-  <button class="fadebutton" <!--onclick="stop()"-->>案内停止</button>
+  <button class="fadebutton"> 案内停止</button>
   </div>
 
-    <div class="chatcontainer">
+    <div class="optcontainer" id="optcontainer">
+  <button class="optbutton" >使い方</button>
+  <button class="optbutton" >高さ調節</button>
+  </div>
+
+    <div class="chatcontainer" id="chatcontainer">
 
         <div class="chat-container" id="chat-container">
             <!-- チャットメッセージがここに追加されます -->
@@ -49,6 +59,8 @@
         </div>
 
     </div>
+
+  
 	    <!-- JavaScriptファイルを読み込む -->
     <script src="gapless.js"></script>
     <script src="gapless_chat.js"></script>
