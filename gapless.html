@@ -7,7 +7,9 @@
     <!-- CSSファイルを読み込む -->
     <link rel="stylesheet" href="gapless.css">
     <link rel="stylesheet" href="gapless_chat.css">
+    <link rel="stylesheet" href="gapless_ex.css">
     <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+    <link rel="apple-touch-icon" href="./gaprisu.png" sizes="180x180">
 </head>
 <body>
       <div class="stroke">
@@ -33,18 +35,18 @@
   <div class="fadecontainer" id="fadecontainer">
   
   <div class="nav2status">
-        <p id="status">Waiting for data...</p>
+        <div class="bounce-text" id="status">Waiting for data...</div>
     </div>
-
+  <div class="border status"></div>
   <div id="fade-text">初期の表示内容</div>
-  
+  <div class="border location"></div> 
   <button class="fadebutton" onclick="toggleFade()">次の案内</button>
-  <button class="fadebutton"> 案内停止</button>
+  <button class="fadebutton" onclick="sendstopGoal()"> 案内停止</button>
   </div>
 
     <div class="optcontainer" id="optcontainer">
-  <button class="optbutton" >使い方</button>
-  <button class="optbutton" >高さ調節</button>
+  <button class="optbutton" onclick="showex()" >使用方法</button>
+  <button class="optbutton" onclick="apanddown()">高さ調節</button>
   </div>
 
     <div class="chatcontainer" id="chatcontainer">
@@ -59,11 +61,18 @@
         </div>
 
     </div>
-
-  
+    <div class="modal" id="imageModal">
+        <span class="close">&times;</span>
+        <button class="nav-button prev">&lt;</button>
+        <button class="nav-button next">&gt;</button>
+        <div class="modal-content">
+            <img src="" class="modal-image" alt="Large image">
+        </div>
+    </div>  
 	    <!-- JavaScriptファイルを読み込む -->
     <script src="gapless.js"></script>
     <script src="gapless_chat.js"></script>
     <script src="gapless_ros.js"></script>
+    <script src="gapless_ex.js"></script>
 </body>
 </html>

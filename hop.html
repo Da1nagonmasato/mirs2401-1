@@ -48,14 +48,15 @@
       // 各文字に<span>タグを追加して、アニメーションを適用
       text.split('').forEach((char, index) => {
         const span = document.createElement('span');
-        span.textContent = char;
+        // スペース文字は &nbsp; に置き換える
+        span.innerHTML = char === ' ' ? '&nbsp;' : char;
         span.style.animationDelay = `${index * 0.1}s`; // アニメーションの遅延を設定
         container.appendChild(span);
       });
     }
 
     // 初期の文字列を設定
-    animateText('こんにちは、世界！');
+    animateText('Waiting for data...');
 
     // 文字数を動的に変化させる場合（例えばボタンで変更）
     /*setTimeout(() => {

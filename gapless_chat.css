@@ -1,7 +1,7 @@
 /* styles.css */
         .chatcontainer {
             width: 53%;
-	    height: 86.5%;
+	    height: 90.5%;
             background: #fff;
             padding: 10px;
             box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
@@ -67,7 +67,7 @@
 	    opacity: 1;
         }
         .chat_button:hover {
-            background-color: #0056b3;
+            background-color: #0f0f0f;
         }
         .status-indicator {
             text-align: center;

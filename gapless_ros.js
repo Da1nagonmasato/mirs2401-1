@@ -129,6 +129,6 @@ amclPoseTopic.subscribe((message) => {//amcl_poseのサブスクライブ
       }
     }
   });
-    goalPub.publish(poseMsg);
+    goalPose.publish(poseMsg);
     console.log('Goal pose published');
   }

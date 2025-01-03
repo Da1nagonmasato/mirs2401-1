@@ -10,6 +10,7 @@
     const fadeElement = document.getElementById('fadecontainer');
     const chatElement = document.getElementById('chatcontainer');
     const optElement = document.getElementById("optcontainer");
+    const statusElement = document.getElementById("status");
     var resev = [];
     const messages = [];
     let clickCount = -1;
@@ -65,9 +66,10 @@
 
 　
 var ros = new ROSLIB.Ros({
-          url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
-          //url: 'ws://172.25.19.148:9090'　//その他デバイス向け
-        });
+          //url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
+          //url: 'ws://172.25.19.148:9090'　//その他デバイス向け(学校wifi)
+	  url: 'ws://192.168.116.85:9090'　//その他デバイス向け(松嶋家wifi)
+        });//いちいち変えるのめんどくさい死んでくれ
 
         ros.on('connection', function() {
             console.log('Connected to rosbridge server');
@@ -169,6 +171,30 @@ document.addEventListener('touchmove', function(event) {//画面スクロール�
 	 optElement.classList.add('show');
         }, 500);
 
+	setTimeout(() => {
+　　　　animateText('Waiting for data...');
+        }, 2000);
+	
+	setTimeout(() => {
+　　　　const navElement = document.querySelector('.fadecontainer');                                                                  navElement.classList.add('is-animated');
+        }, 800);
+
         clickCount ++;
      }
     }
+
+function animateText(text) {
+      statusElement.innerHTML = ''; // 前の文字をクリア
+
+      // 各文字に<span>タグを追加して、アニメーションを適用
+      text.split('').forEach((char, index) => {
+        const span = document.createElement('span');
+        span.innerHTML = char === ' ' ? '&nbsp;' : char;
+        span.style.animationDelay = `${index * 0.075}s`; // アニメーションの遅延を設定
+        statusElement.appendChild(span);
+      });
+    }
+
+function apanddown(){
+	 alert('現在この機能はサポートされていません');
+}
