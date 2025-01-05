@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>暗証番号確認</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+    .container {
+      display: flex;
+      flex-grow: 1;
+    }
+    .left {
+      flex: 1;
+      padding: 20px;
+      background-color: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .left img {
+      max-width: 80%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    .left p {
+      font-size: 18px;
+      line-height: 1.6;
+      text-align: center;
+    }
+    .right {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .display-container {
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+      background-color: #f9f9f9;
+      width: 80%;
+    }
+    #display {
+      margin: 10px 0;
+      font-size: 24px;
+      border: 2px solid #ccc;
+      width: 120px;
+      padding: 10px;
+      text-align: center;
+      letter-spacing: 5px;
+    }
+    .keypad-container {
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+      text-align: center;
+    }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 70px);
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .key {
+      font-size: 20px;
+      padding: 15px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      text-align: center;
+    }
+    .key:hover {
+      background-color: #ddd;
+    }
+    #clear, #submit {
+      font-size: 18px;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 左側 -->
+    <div class="left">
+      <img src="https://via.placeholder.com/300x200" alt="説明用画像">
+      <p>以下のテンキーを使用して、4桁の暗証番号を入力してください。<br>入力が完了したら「送信」を押してください。</p>
+    </div>
+
+    <!-- 右側 -->
+    <div class="right">
+      <div class="display-container">
+        <h1>暗証番号確認</h1>
+        <div id="display">----</div>
+      </div>
+      <div class="keypad-container">
+        <div class="keypad">
+          <div class="key" onclick="pressKey(1)">1</div>
+          <div class="key" onclick="pressKey(2)">2</div>
+          <div class="key" onclick="pressKey(3)">3</div>
+          <div class="key" onclick="pressKey(4)">4</div>
+          <div class="key" onclick="pressKey(5)">5</div>
+          <div class="key" onclick="pressKey(6)">6</div>
+          <div class="key" onclick="pressKey(7)">7</div>
+          <div class="key" onclick="pressKey(8)">8</div>
+          <div class="key" onclick="pressKey(9)">9</div>
+          <div class="key" onclick="clearInput()">C</div>
+          <div class="key" onclick="pressKey(0)">0</div>
+          <div class="key" onclick="submitPin()">OK</div>
+        </div>
+        <button id="clear" class="key" onclick="clearInput()">クリア</button>
+        <button id="submit" class="key" onclick="submitPin()">送信</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let pin = '';
+
+    function pressKey(num) {
+      if (pin.length < 4) {
+        pin += num;
+        updateDisplay();
+      }
+    }
+
+    function updateDisplay() {
+      const display = document.getElementById('display');
+      display.textContent = pin.padEnd(4, '-');
+    }
+
+    function clearInput() {
+      pin = '';
+      updateDisplay();
+    }
+
+    function submitPin() {
+      if (pin.length === 4) {
+        alert(`入力された暗証番号: ${pin}`);
+      } else {
+        alert('4桁の暗証番号を入力してください。');
+      }
+    }
+  </script>
+</body>
+</html>
+

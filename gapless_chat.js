@@ -15,7 +15,7 @@
             }
             startRecognition();
         }
-
+//どうして人に投げた仕事まで俺がやらなきゃならない？どうかしてんのか
         function addMessage(text, isUser) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;

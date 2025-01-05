@@ -11,7 +11,13 @@
     const chatElement = document.getElementById('chatcontainer');
     const optElement = document.getElementById("optcontainer");
     const statusElement = document.getElementById("status");
+    const openMapButton = document.getElementById('openMapButton');
+    const mapModal = document.getElementById('mapModal');
+    const closeModalButton = document.getElementById('closeModalButton');
+    const loginElement = document.getElementById("logincontainer");
     var resev = [];
+    var userpin;
+    let pin = '';
     const messages = [];
     let clickCount = -1;
     const textElement = document.getElementById('fade-text');
@@ -39,9 +45,9 @@
     }
 
     window.onload = () => {//読み込み時の処理
-      loadtextElement.textContent = 'ROS接続中'; // 表示を更新
-//GASからのデータ取得
-      const url = "https://script.google.com/macros/s/AKfycbyimWGncGFN334Mo5VX_FgehcU5wPyiDEVMB2I37PlJpkBfjw6__j7JE3dtWimv4vfhFQ/exec"; // GASのAPIのURL
+      
+//GASからのデータ取得参考https://monaledge.com/article/406
+      const url = "https://script.google.com/macros/s/AKfycbyKIV4ekhYeauFJ8NpRf5AtXqRrwbU5SVSdZcIb1Zvb4LLjI569wQzRMJz6m-Tttgy5wA/exec"; // GASのAPIのURL
 
       const requestParams = {
         method: "GET",
@@ -56,12 +62,55 @@
         .then((response) => response.json())
         .then((result) => {
           resev = result.resev;
-          //console.log(resev); // {"status":"OK"}が返ってくる
+	  userpin = result.pin;
+          console.log(result); // {"status":"OK"}が返ってくる
+	  console.log("pin");
+	  console.log(pin);
           isgetdataElement.textContent = "取得済み";
         })
-        .catch((e) => loadfinish());
+        .catch((e) => showlogin());
 
     };
+
+function showlogin(){
+  imageElement.style.display = 'none'; // 画像を非表示
+        spinnerboxElement.style.display = 'none';
+        circleborderElement.style.display = 'none';
+        circlecoreElement.style.display = 'none';
+        loadtextElement.textContent = ''; // 表示を更新
+	loginElement.style.display = 'flex';
+}
+
+    function pressKey(num) {
+	    
+      if (pin.length < 4) {
+	console.log("presspin");
+        pin += num;
+        updateDisplay();
+      }
+    }
+
+    function updateDisplay() {
+      const display = document.getElementById('display');
+      display.textContent = pin.padEnd(4, '-');
+    }
+
+    function clearInput() {
+      pin = '';
+      updateDisplay();
+    }
+
+    function submitPin() {
+      if (pin.length === 4) {
+        alert(`入力された暗証番号: ${pin}`);
+	if(pin == userpin){
+		console.log("成功");
+		fakeload();
+	}
+      } else {
+        alert('4桁の暗証番号を入力してください。');
+      }
+    }
 
 
 　
@@ -73,12 +122,7 @@ var ros = new ROSLIB.Ros({
 
         ros.on('connection', function() {
             console.log('Connected to rosbridge server');
-	setTimeout(() => {
-	    loadtextElement.textContent = 'ROS接続完了';
-	      setTimeout(() => {
-              loadtextElement.textContent = 'データ同期中';
-              }, 500);
-	}, 1000);// ロード表記更新までの遅延（ただの演出）
+	
         });
 
         ros.on('error', function(error) {
@@ -88,6 +132,24 @@ var ros = new ROSLIB.Ros({
         ros.on('close', function() {
             console.log('Connection to rosbridge server closed');
         });
+
+function fakeload(){
+	loginElement.style.display = 'none';
+	imageElement.style.display = 'flex'; // 画像を非表示
+        spinnerboxElement.style.display = 'flex';
+        circleborderElement.style.display = 'flex';
+        circlecoreElement.style.display = 'flex';
+	loadtextElement.textContent = 'ROS接続中'; // 表示を更新
+        setTimeout(() => {
+            loadtextElement.textContent = 'ROS接続完了';
+              setTimeout(() => {
+              loadtextElement.textContent = 'データ同期中';
+              }, 500);
+        }, 1000);// ロード表記更新までの遅延（ただの演出）
+        setTimeout(() => {
+        loadfinish();
+        }, 3000);
+}
 　
 　function loadfinish(){
   console.log(resev);
@@ -128,9 +190,9 @@ var ros = new ROSLIB.Ros({
   });
 
 
-document.addEventListener('touchmove', function(event) {//画面スクロール禁止
+/*document.addEventListener('touchmove', function(event) {//画面スクロール禁止
     event.preventDefault();
-}, { passive: false });
+}, { passive: false });*/
 
 
     function toggleFade() {//案内の進行
@@ -175,6 +237,10 @@ document.addEventListener('touchmove', function(event) {//画面スクロール�
 　　　　animateText('Waiting for data...');
         }, 2000);
 	
+	setTimeout(() => {
+         openMapButton.classList.add('show');
+        }, 700);
+
 	setTimeout(() => {
 　　　　const navElement = document.querySelector('.fadecontainer');                                                                  navElement.classList.add('is-animated');
         }, 800);

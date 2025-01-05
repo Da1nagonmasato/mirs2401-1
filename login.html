@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification App</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const emailInput = document.getElementById('email');
+            const sendCodeButton = document.getElementById('sendCodeButton');
+            const emailMessage = document.getElementById('emailMessage');
+            const codeInput = document.getElementById('code');
+            const verifyCodeButton = document.getElementById('verifyCodeButton');
+            const verifyMessage = document.getElementById('verifyMessage');
+
+            // コード送信
+            sendCodeButton.addEventListener('click', () => {
+                const email = emailInput.value;
+                emailMessage.textContent = '';
+                fetch('/send_code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            emailMessage.textContent = 'Verification code sent!';
+                        } else {
+                            emailMessage.textContent = data.message;
+                        }
+                    })
+                    .catch(() => {
+                        emailMessage.textContent = 'Failed to send code!';
+                    });
+            });
+
+            // コード確認
+            verifyCodeButton.addEventListener('click', () => {
+                const code = codeInput.value;
+                verifyMessage.textContent = '';
+                fetch('/verify_code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            verifyMessage.textContent = 'Code matched!';
+                        } else {
+                            verifyMessage.textContent = data.message;
+                        }
+                    })
+                    .catch(() => {
+                        verifyMessage.textContent = 'Verification failed!';
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Email Verification</h1>
+    <div>
+        <label for="email">Enter your Gmail:</label>
+        <input type="email" id="email" placeholder="example@gmail.com" required>
+        <button id="sendCodeButton">Send Code</button>
+        <p id="emailMessage"></p>
+    </div>
+    <div>
+        <label for="code">Enter the 4-digit code:</label>
+        <input type="text" id="code" maxlength="4" required>
+        <button id="verifyCodeButton">Verify</button>
+        <p id="verifyMessage"></p>
+    </div>
+</body>
+</html>
+

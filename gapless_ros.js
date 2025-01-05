@@ -132,3 +132,86 @@ amclPoseTopic.subscribe((message) => {//amcl_poseのサブスクライブ
     goalPose.publish(poseMsg);
     console.log('Goal pose published');
   }
+
+    openMapButton.addEventListener('click', () => {
+      mapModal.style.display = 'flex';
+      setTimeout(() => {
+        map.invalidateSize(); // モーダル表示後に地図サイズを再計算
+        if (lastBounds) {
+          map.fitBounds(lastBounds); // 地図をズーム
+        }
+      }, 0); // 次のリペイントタイミングで実行
+    });
+
+    closeModalButton.addEventListener('click', () => {
+      mapModal.style.display = 'none';
+    });
+
+    // 地図の初期化
+    const map = L.map('map').setView([0, 0], 13); // 初期位置を広域に設定
+    const mapLayer = L.layerGroup().addTo(map); // カスタム地図レイヤー
+    let robotMarker; // ロボットの現在位置マーカー
+    let lastBounds = null; // 最新の地図の境界を保持
+
+
+    // 地図トピックからデータを取得
+    const mapTopic = new ROSLIB.Topic({
+      ros: ros,
+      name: '/map', // Nav2で使用中の地図トピック
+      messageType: 'nav_msgs/OccupancyGrid'
+    });
+
+    mapTopic.subscribe((message) => {
+      console.log('Received map data');
+      const width = message.info.width;
+      const height = message.info.height;
+      const resolution = message.info.resolution;
+      const origin = message.info.origin.position;
+
+      // OccupancyGridデータを画像化
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      const imageData = ctx.createImageData(width, height);
+
+      for (let i = 0; i < message.data.length; i++) {
+        const value = message.data[i];
+        const color = value === -1 ? 255 : 255 - (value * 255) / 100; // グレースケール化
+        imageData.data[i * 4] = color;      // R
+        imageData.data[i * 4 + 1] = color; // G
+        imageData.data[i * 4 + 2] = color; // B
+        imageData.data[i * 4 + 3] = 255;   // Alpha
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      // 地図画像をLeafletに追加
+      const bounds = [
+        [origin.y, origin.x], // 左下の座標
+        [origin.y + height * resolution, origin.x + width * resolution] // 右上の座標
+      ];
+
+      const img = L.imageOverlay(canvas.toDataURL(), bounds);
+
+      mapLayer.clearLayers(); // 既存の地図をクリア
+      mapLayer.addLayer(img); // 新しい地図を追加
+
+      lastBounds = bounds; // 最新の地図範囲を保持
+    });
+
+
+    poseTopic.subscribe((message) => {
+      const position = message.pose.pose.position;
+      const x = position.x;
+      const y = position.y - 1;
+
+      console.log(`現在位置: x=${x}, y=${y}`);
+
+      // ロボットの位置を更新
+      if (robotMarker) {
+        robotMarker.setLatLng([y, x]);
+      } else {
+        robotMarker = L.marker([y, x]).addTo(map);
+      }
+    });

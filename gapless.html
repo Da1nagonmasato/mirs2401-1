@@ -8,10 +8,50 @@
     <link rel="stylesheet" href="gapless.css">
     <link rel="stylesheet" href="gapless_chat.css">
     <link rel="stylesheet" href="gapless_ex.css">
+    <link rel="stylesheet" href="gapless_ros.css">
+    <link rel="stylesheet" href="gapless_login.css">
     <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+
     <link rel="apple-touch-icon" href="./gaprisu.png" sizes="180x180">
 </head>
 <body>
+
+	  <div class="logincontainer" id="logincontainer">
+    <!-- 左側 -->
+    <div class="left">
+      <img src="https://via.placeholder.com/300x200" alt="説明用画像">
+      <p>以下のテンキーを使用して、4桁の暗証番号を入力してください。<br>入力が完了したら「送信」を押してください。</p>
+    </div>
+
+    <!-- 右側 -->
+    <div class="right">
+      <div class="display-container">
+        <h1>暗証番号確認</h1>
+        <div id="display">----</div>
+      </div>
+      <div class="keypad-container">
+        <div class="keypad">
+          <div class="key" onclick="pressKey(1)">1</div>
+          <div class="key" onclick="pressKey(2)">2</div>
+          <div class="key" onclick="pressKey(3)">3</div>
+          <div class="key" onclick="pressKey(4)">4</div>
+          <div class="key" onclick="pressKey(5)">5</div>
+          <div class="key" onclick="pressKey(6)">6</div>
+          <div class="key" onclick="pressKey(7)">7</div>
+          <div class="key" onclick="pressKey(8)">8</div>
+          <div class="key" onclick="pressKey(9)">9</div>
+          <div class="key" onclick="clearInput()">C</div>
+          <div class="key" onclick="pressKey(0)">0</div>
+          <div class="key" onclick="submitPin()">OK</div>
+        </div>
+        <button id="clear" onclick="clearInput()">クリア</button>
+        <button id="submit" onclick="submitPin()">送信</button>
+      </div>
+    </div>
+  </div>
+
       <div class="stroke">
     <div class="border top"></div>
     <div class="border right"></div>
@@ -47,6 +87,17 @@
     <div class="optcontainer" id="optcontainer">
   <button class="optbutton" onclick="showex()" >使用方法</button>
   <button class="optbutton" onclick="apanddown()">高さ調節</button>
+    
+  </div>
+
+  <button id="openMapButton">地図を表示</button>
+
+
+  <div id="mapModal">
+    <div id="modalContent">
+      <button id="closeModalButton">閉じる</button>
+      <div id="map"></div>
+    </div>
   </div>
 
     <div class="chatcontainer" id="chatcontainer">
