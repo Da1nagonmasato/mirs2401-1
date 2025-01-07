@@ -106,6 +106,21 @@
       cursor: pointer;
     }
 
+    .restart-button {
+      position: absolute; /* ボタンの位置を画面内で固定 */
+      bottom: 20px; /* 画面下からの距離 */
+      left: 50%; /* 横位置を画面中央に設定 */
+      transform: translateX(-50%); /* 中央揃え */
+      padding: 10px 20px;
+    font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      display: none;
+    }
+
     .toggle-button:hover {
       background-color: #0056b3;
     }

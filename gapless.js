@@ -115,9 +115,9 @@ function showlogin(){
 
 　
 var ros = new ROSLIB.Ros({
-          //url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
+          url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
           //url: 'ws://172.25.19.148:9090'　//その他デバイス向け(学校wifi)
-	  url: 'ws://192.168.116.85:9090'　//その他デバイス向け(松嶋家wifi)
+	  //url: 'ws://192.168.116.85:9090'　//その他デバイス向け(松嶋家wifi)
         });//いちいち変えるのめんどくさい死んでくれ
 
         ros.on('connection', function() {

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROS 2 Nav2 地図表示 (アスペクト比修正)</title>
+  <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    // 地図の初期化
+    const map = L.map('map').setView([0, 0], 13); // 初期位置を遠目に設定
+    const mapLayer = L.layerGroup().addTo(map); // カスタム地図レイヤー
+    let robotMarker; // ロボットの現在位置マーカー
+          /* const bounds = [
+         [-33.6,-86],
+         [47,13.5]
+                         ];*/
+
+	 /* const bounds = [//縮尺
+         [-86,-33.6],
+         [13.5,47]
+                         ];*/
+
+	const bounds = [//縮尺
+         [0,0],
+         [80.6,99.5]
+                         ];
+
+    // ROS 2との接続
+    const ros = new ROSLIB.Ros({
+      url: 'ws://localhost:9090' // rosbridge_serverのWebSocketアドレス
+    });
+
+    ros.on('connection', () => {
+      console.log('Connected to ROS 2');
+    });
+
+    ros.on('error', (error) => {
+      console.error('Error connecting to ROS 2:', error);
+    });
+
+    ros.on('close', () => {
+      console.log('Connection to ROS 2 closed');
+    });
+
+    // 地図トピックからデータを取得
+    const mapTopic = new ROSLIB.Topic({
+      ros: ros,
+      name: '/map', // Nav2で使用中の地図トピック
+      messageType: 'nav_msgs/OccupancyGrid'
+    });
+
+    mapTopic.subscribe((message) => {
+      console.log('Received map data');
+      const width = message.info.width;
+      const height = message.info.height;
+      const resolution = message.info.resolution;
+      const origin = message.info.origin.position;
+
+      // OccupancyGridデータを画像化
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      const imageData = ctx.createImageData(width, height);
+
+      for (let i = 0; i < message.data.length; i++) {
+        const value = message.data[i];
+        const color = value === -1 ? 255 : 255 - (value * 255) / 100; // グレースケール化
+        const row = Math.floor(i / width);
+        const col = i % width;
+
+        // Y軸を反転して描画
+        const flippedRow = height - row - 1;
+        const flippedIndex = flippedRow * width + col;
+
+        imageData.data[flippedIndex * 4] = color;      // R
+        imageData.data[flippedIndex * 4 + 1] = color; // G
+        imageData.data[flippedIndex * 4 + 2] = color; // B
+        imageData.data[flippedIndex * 4 + 3] = 255;   // Alpha
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      // 地図のアスペクト比を保つための調整
+
+
+      // 地図の範囲を計算
+ /*     const bounds = [
+        [origin.y, origin.x],
+        [origin.y + mapHeight, origin.x + mapWidth]
+      ];*/
+
+      const img = L.imageOverlay(canvas.toDataURL(), bounds);
+
+      mapLayer.clearLayers(); // 既存の地図をクリア
+      mapLayer.addLayer(img); // 新しい地図を追加
+
+      // 地図のビューを自動的に調整
+      map.fitBounds(bounds); // 地図全体が収まるようにズーム調整
+    });
+
+    // 現在位置トピック
+    const poseTopic = new ROSLIB.Topic({
+      ros: ros,
+      name: '/amcl_pose', // 現在位置トピック
+      messageType: 'geometry_msgs/PoseWithCovarianceStamped'
+    });
+
+    poseTopic.subscribe((message) => {
+      const position = message.pose.pose.position;
+      const x = position.x;
+      const y = position.y;
+
+      console.log(`現在位置: x=${x}, y=${y}`);
+      console.log(bounds[0][0]);
+      // ロボットの位置を更新
+      if (robotMarker) {
+        robotMarker.setLatLng([y, x]);
+      } else {
+        robotMarker = L.marker([y, x]).addTo(map);
+      }
+
+		      robotMarker = L.marker([10, 10]).addTo(map);
+		    robotMarker = L.marker([20, 20]).addTo(map);
+                    robotMarker = L.marker([30, 30]).addTo(map);
+                    robotMarker = L.marker([40, 40]).addTo(map);
+		    robotMarker = L.marker([50, 50]).addTo(map);
+		    robotMarker = L.marker([60, 60]).addTo(map);
+		    robotMarker = L.marker([70, 70]).addTo(map);
+		    robotMarker = L.marker([80, 80]).addTo(map);
+		      robotMarker = L.marker([90, 90]).addTo(map);
+                    robotMarker = L.marker([100, 100]).addTo(map);
+		                            robotMarker = L.marker([-10, -10]).addTo(map);
+                    robotMarker = L.marker([-20, -20]).addTo(map);
+                    robotMarker = L.marker([-30, -30]).addTo(map);
+                    robotMarker = L.marker([-40, -40]).addTo(map);
+                    robotMarker = L.marker([-50, -50]).addTo(map);
+                    robotMarker = L.marker([-60, -60]).addTo(map);
+                    robotMarker = L.marker([-70, -70]).addTo(map);
+                    robotMarker = L.marker([-80, -80]).addTo(map);
+		    /*  robotMarker = L.marker([-60, 0]).addTo(map);
+		      robotMarker = L.marker([-90, 0]).addTo(map);
+		      robotMarker = L.marker([-120, 0]).addTo(map);
+		      robotMarker = L.marker([-150, 0]).addTo(map);
+      */// 地図の中心を現在位置に移動（ユーザー操作を妨げないようにコメントアウト可能）
+      map.setView([y, x], map.getZoom());
+    });
+  </script>
+</body>
+</html>
+

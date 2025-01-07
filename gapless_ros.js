@@ -178,6 +178,14 @@ amclPoseTopic.subscribe((message) => {//amcl_poseのサブスクライブ
       for (let i = 0; i < message.data.length; i++) {
         const value = message.data[i];
         const color = value === -1 ? 255 : 255 - (value * 255) / 100; // グレースケール化
+	      //
+	  const row = Math.floor(i / width);
+  const col = i % width;
+
+  // Y軸を反転して描画
+        const flippedRow = height - row - 1;
+        const flippedIndex = flippedRow * width + col;
+
         imageData.data[i * 4] = color;      // R
         imageData.data[i * 4 + 1] = color; // G
         imageData.data[i * 4 + 2] = color; // B
@@ -200,6 +208,12 @@ amclPoseTopic.subscribe((message) => {//amcl_poseのサブスクライブ
       lastBounds = bounds; // 最新の地図範囲を保持
     });
 
+    // 現在位置トピック
+    const poseTopic = new ROSLIB.Topic({
+      ros: ros,
+      name: '/amcl_pose', // 現在位置トピック
+      messageType: 'geometry_msgs/PoseWithCovarianceStamped'
+    });
 
     poseTopic.subscribe((message) => {
       const position = message.pose.pose.position;
