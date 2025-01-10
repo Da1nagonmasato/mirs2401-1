@@ -130,102 +130,139 @@ amclPoseTopic.subscribe((message) => {//amcl_poseのサブスクライブ
     }
   });
     goalPose.publish(poseMsg);
+		    animateText('navigation suspended');
     console.log('Goal pose published');
+		    navigating = false;
+		    restartButton.style.display = 'flex';
+		    navButton.style.display = 'none';
+
   }
 
-    openMapButton.addEventListener('click', () => {
-      mapModal.style.display = 'flex';
-      setTimeout(() => {
-        map.invalidateSize(); // モーダル表示後に地図サイズを再計算
-        if (lastBounds) {
-          map.fitBounds(lastBounds); // 地図をズーム
-        }
-      }, 0); // 次のリペイントタイミングで実行
+function restart(){
+restartButton.style.display = 'none';
+navigating = true;
+	navButton.style.display = 'flex';
+if((clickCount >= 0) && (messages.length - 1 > clickCount))goalpose(resev[clickCount].x,resev[clickCount].y,resev[clickCount].z,resev[clickCount].w);
+}
+
+        let mapResolution = 0.05; // デフォルトの解像度 (1ピクセルあたりのメートル)
+    let mapOrigin = [-10, -10]; // デフォルトの原点 (x, y)
+
+    // Leaflet地図の初期化
+    const map = L.map('map', {
+      crs: L.CRS.Simple, // Nav2地図を平面座標系として扱う
+      minZoom: -5,
+      maxZoom: 5,
     });
 
-    closeModalButton.addEventListener('click', () => {
-      mapModal.style.display = 'none';
-    });
-
-    // 地図の初期化
-    const map = L.map('map').setView([0, 0], 13); // 初期位置を広域に設定
-    const mapLayer = L.layerGroup().addTo(map); // カスタム地図レイヤー
-    let robotMarker; // ロボットの現在位置マーカー
-    let lastBounds = null; // 最新の地図の境界を保持
-
-
-    // 地図トピックからデータを取得
+    // 地図情報を取得 (/map)
     const mapTopic = new ROSLIB.Topic({
       ros: ros,
-      name: '/map', // Nav2で使用中の地図トピック
-      messageType: 'nav_msgs/OccupancyGrid'
+      name: '/map',
+      messageType: 'nav_msgs/OccupancyGrid',
     });
 
     mapTopic.subscribe((message) => {
-      console.log('Received map data');
+      console.log('Map data received.');
+//alert('Map data received.');
+      // 地図データをCanvasに描画
       const width = message.info.width;
       const height = message.info.height;
-      const resolution = message.info.resolution;
-      const origin = message.info.origin.position;
+      mapResolution = message.info.resolution;
+      mapOrigin = [
+        message.info.origin.position.x,
+        message.info.origin.position.y,
+      ];
 
-      // OccupancyGridデータを画像化
       const canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext('2d');
       const imageData = ctx.createImageData(width, height);
 
-      for (let i = 0; i < message.data.length; i++) {
-        const value = message.data[i];
-        const color = value === -1 ? 255 : 255 - (value * 255) / 100; // グレースケール化
-	      //
-	  const row = Math.floor(i / width);
-  const col = i % width;
-
-  // Y軸を反転して描画
-        const flippedRow = height - row - 1;
-        const flippedIndex = flippedRow * width + col;
-
-        imageData.data[i * 4] = color;      // R
-        imageData.data[i * 4 + 1] = color; // G
-        imageData.data[i * 4 + 2] = color; // B
-        imageData.data[i * 4 + 3] = 255;   // Alpha
+      // OccupancyGridデータを画像に変換（上下反転）
+      const data = message.data;
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const i = x + (height - y - 1) * width; // 上下反転
+          const value = data[i];
+          const color = value === -1 ? 128 : value === 100 ? 0 : 255; // 不明:灰色, 障害物:黒, 空白:白
+          const index = (y * width + x) * 4;
+          imageData.data[index] = color;     // R
+          imageData.data[index + 1] = color; // G
+          imageData.data[index + 2] = color; // B
+          imageData.data[index + 3] = 255;   // Alpha
+        }
       }
-
       ctx.putImageData(imageData, 0, 0);
 
-      // 地図画像をLeafletに追加
-      const bounds = [
-        [origin.y, origin.x], // 左下の座標
-        [origin.y + height * resolution, origin.x + width * resolution] // 右上の座標
-      ];
-
-      const img = L.imageOverlay(canvas.toDataURL(), bounds);
-
-      mapLayer.clearLayers(); // 既存の地図をクリア
-      mapLayer.addLayer(img); // 新しい地図を追加
-
-      lastBounds = bounds; // 最新の地図範囲を保持
+      // Leaflet地図に追加
+      const mapImageUrl = canvas.toDataURL();
+      const southWest = L.latLng(
+        mapOrigin[1],
+        mapOrigin[0]
+      );
+      const northEast = L.latLng(
+        mapOrigin[1] + height * mapResolution,
+        mapOrigin[0] + width * mapResolution
+      );
+      const imageBounds = [southWest, northEast];
+      L.imageOverlay(mapImageUrl, imageBounds).addTo(map);
+      map.fitBounds(imageBounds);
     });
 
-    // 現在位置トピック
+    // Nav2の現在地情報を購読 (/amcl_pose)
     const poseTopic = new ROSLIB.Topic({
       ros: ros,
-      name: '/amcl_pose', // 現在位置トピック
-      messageType: 'geometry_msgs/PoseWithCovarianceStamped'
+      name: '/amcl_pose',
+      messageType: 'geometry_msgs/PoseWithCovarianceStamped',
     });
+
+    let currentMarker = null;
 
     poseTopic.subscribe((message) => {
       const position = message.pose.pose.position;
-      const x = position.x;
-      const y = position.y - 1;
+      const latitude = position.y; // Y軸を緯度として計算
+      const longitude = position.x; // X軸を経度として計算
 
-      console.log(`現在位置: x=${x}, y=${y}`);
+      console.log(`現在地: 緯度=${latitude}, 経度=${longitude}`);
 
-      // ロボットの位置を更新
-      if (robotMarker) {
-        robotMarker.setLatLng([y, x]);
-      } else {
-        robotMarker = L.marker([y, x]).addTo(map);
+      // 現在地マーカーを更新
+      if (currentMarker) {
+        map.removeLayer(currentMarker);
       }
+      currentMarker = L.marker([latitude, longitude]).addTo(map)
+        .bindPopup(`現在地<br>緯度: ${latitude.toFixed(2)}<br>経度: ${longitude.toFixed(2)}`);
+
+      // 現在地を中心に移動
+      map.setView([latitude, longitude], map.getZoom());
     });
+
+    // ボタンをクリックしたときにモーダルを表示
+    const showMapBtn = document.getElementById('showMapBtn');
+    const mapmodal = document.getElementById('mapModal');
+    const mapcloseBtn = document.querySelector('.mapclose');
+
+    // モーダルを表示
+    showMapBtn.onclick = function() {
+      mapmodal.style.display = 'block';
+
+        // モーダルが表示された後に地図サイズを再計算
+  map.invalidateSize();
+  
+  // 現在地を中心に地図を再調整
+  const currentCenter = map.getCenter();
+  map.setView(currentCenter, 3); // ズームレベルを15に設定（適宜調整）
+    }
+
+    // モーダルを閉じる
+    mapcloseBtn.onclick = function() {
+      mapmodal.style.display = 'none';
+    }
+
+    // モーダル外の部分をクリックした場合にも閉じる
+    window.onclick = function(event) {
+      if (event.target === mapmodal) {
+        mapmodal.style.display = 'none';
+      }
+    }

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket ROS Connection</title>
+  <script>
+    // WebSocket server URL (replace with your WebSocket server URL)
+    const websocketURL = 'ws://172.25.14.193:9090';
+	   //const websocketURL = 'ws://localhost:9090';
+
+    // Create a new WebSocket instance
+    const socket = new WebSocket(websocketURL);
+
+    // WebSocket connection opened
+    socket.onopen = function() {
+      console.log('Connected to ROS WebSocket server');
+      document.getElementById('status').innerHTML = 'Connected to ROS WebSocket server';
+      document.getElementById('status').style.color = 'green';
+    };
+
+    // WebSocket message received
+    socket.onmessage = function(event) {
+      console.log('Message from server:', event.data);
+    };
+
+    // WebSocket connection error
+    socket.onerror = function(error) {
+      console.error('WebSocket Error: ', error);
+      document.getElementById('status').innerHTML = 'Connection Error';
+      document.getElementById('status').style.color = 'red';
+    };
+
+    // WebSocket connection closed
+    socket.onclose = function(event) {
+      console.log('WebSocket connection closed');
+      document.getElementById('status').innerHTML = 'WebSocket connection closed';
+      document.getElementById('status').style.color = 'orange';
+    };
+  </script>
+</head>
+<body>
+  <h1>ROS WebSocket Connection Status</h1>
+  <p id="status">Connecting...</p>
+</body>
+</html>
+

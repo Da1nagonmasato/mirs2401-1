@@ -11,15 +11,19 @@
     const chatElement = document.getElementById('chatcontainer');
     const optElement = document.getElementById("optcontainer");
     const statusElement = document.getElementById("status");
-    const openMapButton = document.getElementById('openMapButton');
+    const openMapButton = document.getElementById('showMapBtn');
     const mapModal = document.getElementById('mapModal');
     const closeModalButton = document.getElementById('closeModalButton');
     const loginElement = document.getElementById("logincontainer");
+    const navButton = document.getElementById('navButton');
+    const restartButton = document.getElementById('restartButton');
     var resev = [];
     var userpin;
     let pin = '';
+    var username="";
     const messages = [];
     let clickCount = -1;
+    let navigating = false;
     const textElement = document.getElementById('fade-text');
     const textmarginElement = document.getElementById('fade-text-margin');
     /*toggleButton.addEventListener('click', () => {
@@ -47,7 +51,7 @@
     window.onload = () => {//読み込み時の処理
       
 //GASからのデータ取得参考https://monaledge.com/article/406
-      const url = "https://script.google.com/macros/s/AKfycbyKIV4ekhYeauFJ8NpRf5AtXqRrwbU5SVSdZcIb1Zvb4LLjI569wQzRMJz6m-Tttgy5wA/exec"; // GASのAPIのURL
+      const url = "https://script.google.com/macros/s/AKfycbzJN4mIkNQ5Sf2pXzeQLs2_KydCdJLLNVl-RZTY-IoK9sh-hcnRxgorCS2GTkNRppnsMA/exec"; // GASのAPIのURL
 
       const requestParams = {
         method: "GET",
@@ -65,11 +69,14 @@
 	  userpin = result.pin;
           console.log(result); // {"status":"OK"}が返ってくる
 	  console.log("pin");
-	  console.log(pin);
+	  console.log(result.pin);
+	  console.log(result.data);
+	  username=result.data;
           isgetdataElement.textContent = "取得済み";
         })
         .catch((e) => showlogin());
-
+//.catch((e) => fakeload());
+	 restartButton.style.display = 'none';
     };
 
 function showlogin(){
@@ -101,6 +108,8 @@ function showlogin(){
     }
 
     function submitPin() {
+	    utterance = new SpeechSynthesisUtterance('');
+            synth.speak(utterance);
       if (pin.length === 4) {
         alert(`入力された暗証番号: ${pin}`);
 	if(pin == userpin){
@@ -113,10 +122,12 @@ function showlogin(){
     }
 
 
+
+
 　
 var ros = new ROSLIB.Ros({
-          url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
-          //url: 'ws://172.25.19.148:9090'　//その他デバイス向け(学校wifi)
+          //url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
+          url: 'ws://172.25.14.193:9090'　//その他デバイス向け(学校wifi)
 	  //url: 'ws://192.168.116.85:9090'　//その他デバイス向け(松嶋家wifi)
         });//いちいち変えるのめんどくさい死んでくれ
 
@@ -127,10 +138,12 @@ var ros = new ROSLIB.Ros({
 
         ros.on('error', function(error) {
             console.log('Error connecting to rosbridge server: ', error);
+		alert("ROS2 error:websocketとの接続に失敗しました。インターネット状況を確認し、ページをリロードしてください。");
         });
 
         ros.on('close', function() {
             console.log('Connection to rosbridge server closed');
+		alert("ROS2 error:websocketとの接続が切断しまた。インターネット状況を確認し、ページをリロードしてくだ>さい。");
         });
 
 function fakeload(){
@@ -180,8 +193,11 @@ function fakeload(){
       setTimeout(() => {
         element.classList.add('is-animated');
       }, 100); // アニメーション開始までの遅延（調整可能）
- 
+ const startmess = "ようこそ" + username + "さん。次の案内を押して見学を始めましょう。質問があれば音声入力を開始のボタンを押してから話しかけてください。もし機体が暴走したら機体上部の赤いスイッチを押してください。操作方法は使い方のボタンから確認できます。"
      toggleFade();
+	console.log(username);
+	addMessage(startmess, 0)
+	speakResponse(startmess);
 }
 
   //画面ズームを禁止する
@@ -242,7 +258,8 @@ function fakeload(){
         }, 700);
 
 	setTimeout(() => {
-　　　　const navElement = document.querySelector('.fadecontainer');                                                                  navElement.classList.add('is-animated');
+　　　　const navElement = document.querySelector('.fadecontainer');                 
+	navElement.classList.add('is-animated');
         }, 800);
 
         clickCount ++;
@@ -263,4 +280,41 @@ function animateText(text) {
 
 function apanddown(){
 	 alert('現在この機能はサポートされていません');
+	/*speakResponse("ようこそ" + username + "さん。次の案内を押して見学を始めましょう。質問があれば音声入力を開始のボタンを押してから話しかけてください。>もし機体が暴走したら機体上部の赤いスイッチを押してください。操作方法は使い方のボタンから確認できます。");*/
+	
 }
+
+
+/*function speakText(text) {
+            //const text = "読み上げる文章"
+            if (synth.speaking) {
+                console.warn("既に読み上げ中です");
+                return;
+            }
+
+
+            utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "ja-JP"; // 日本語を設定
+            utterance.onend = () => {
+                console.log("読み上げ完了");
+            };
+            utterance.onerror = (event) => {
+                console.error("読み上げ中にエラーが発生しました", event);
+            };
+            synth.speak(utterance);
+        }
+
+        function stopSpeech() {
+            if (synth.speaking) {
+                synth.cancel();
+                console.log("読み上げを停止しました");
+            }
+        }
+
+                    function initSpeech() {
+            // 無音のテキストで音声合成を初期化
+            utterance = new SpeechSynthesisUtterance('');
+            synth.speak(utterance);
+
+          //  speechInitialized = true;
+        }*/

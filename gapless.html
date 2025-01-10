@@ -20,13 +20,14 @@
 
 	  <div class="logincontainer" id="logincontainer">
     <!-- 左側 -->
-    <div class="left">
-      <img src="https://via.placeholder.com/300x200" alt="説明用画像">
-      <p>以下のテンキーを使用して、4桁の暗証番号を入力してください。<br>入力が完了したら「送信」を押してください。</p>
+    <div class="loginleft">
+      <img src="pin.png" alt="説明用画像">
+      <p>右のテンキーを使用して、4桁の暗証番号を入力してください。<br>入力が完了したら「送信」を押してください。</p>
+      <p>番号は予約用のサイトの「プロフィール」の欄から、画像の部分を確認することで確認できます。<p/>
     </div>
 
     <!-- 右側 -->
-    <div class="right">
+    <div class="loginright">
       <div class="display-container">
         <h1>暗証番号確認</h1>
         <div id="display">----</div>
@@ -80,25 +81,28 @@
   <div class="border status"></div>
   <div id="fade-text">初期の表示内容</div>
   <div class="border location"></div> 
-  <button class="fadebutton" onclick="toggleFade()">次の案内</button>
-  <button class="fadebutton" onclick="sendstopGoal()"> 案内停止</button>
+  <button class="restartbutton" id="restartButton" onclick="restart()">案内再開</button>
+  <button class="fadebutton" id="navButton" onclick="toggleFade()">次の案内</button>
+  <button class="stopbutton" onclick="sendstopGoal()"> 案内停止</button>
   </div>
 
     <div class="optcontainer" id="optcontainer">
   <button class="optbutton" onclick="showex()" >使用方法</button>
   <button class="optbutton" onclick="apanddown()">高さ調節</button>
-    
+   
   </div>
 
-  <button id="openMapButton">地図を表示</button>
 
+    <!-- 地図表示ボタン -->
+       <button id="showMapBtn" class="map-button" >地図を表示</button>
 
-  <div id="mapModal">
-    <div id="modalContent">
-      <button id="closeModalButton">閉じる</button>
-      <div id="map"></div>
+  <!-- モーダル -->
+  <div id="mapModal" class="mapmodal">
+    <div class="modal-content">
+      <span class="mapclose">&times;</span>
+      <div id="map" style="height: 500px;"></div>
     </div>
-  </div>
+  </div> 
 
     <div class="chatcontainer" id="chatcontainer">
 

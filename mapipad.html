@@ -3,103 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROS 2 Nav2 地図と現在位置表示</title>
+  <title>ROS 2 Nav2 全体マップ表示</title>
   <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    #openMapButton {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #mapModal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-    }
-    #modalContent {
-      background-color: white;
-      width: 90%;
-      height: 80%;
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
     #map {
-      flex: 1;
-    }
-    #closeModalButton {
-      padding: 10px;
-      background-color: #f44336;
-      color: white;
-      border: none;
-      cursor: pointer;
-      text-align: center;
+      height: 100vh;
+      width: 100%;
     }
   </style>
 </head>
 <body>
-  <button id="openMapButton">地図を表示</button>
-
-  <div id="mapModal">
-    <div id="modalContent">
-      <button id="closeModalButton">閉じる</button>
-      <div id="map"></div>
-    </div>
-  </div>
-
+  <div id="map"></div>
   <script>
-    // モーダルの表示・非表示の制御
-    const openMapButton = document.getElementById('openMapButton');
-    const mapModal = document.getElementById('mapModal');
-    const closeModalButton = document.getElementById('closeModalButton');
-
-    openMapButton.addEventListener('click', () => {
-      mapModal.style.display = 'flex';
-      setTimeout(() => {
-        map.invalidateSize(); // モーダル表示後に地図サイズを再計算
-        if (lastBounds) {
-          map.fitBounds(lastBounds); // 地図をズーム
-        }
-      }, 0); // 次のリペイントタイミングで実行
-    });
-
-    closeModalButton.addEventListener('click', () => {
-      mapModal.style.display = 'none';
-    });
-
     // 地図の初期化
-    const map = L.map('map').setView([0, 0], 13); // 初期位置を広域に設定
+    const map = L.map('map').setView([0, 0], 13); // 初期位置を遠目に設定
     const mapLayer = L.layerGroup().addTo(map); // カスタム地図レイヤー
     let robotMarker; // ロボットの現在位置マーカー
-    let lastBounds = null; // 最新の地図の境界を保持
 
     // ROS 2との接続
     const ros = new ROSLIB.Ros({
-       url: 'ws://172.25.19.148:9090' // rosbridge_serverのWebSocketアドレス
+      url: 'ws://172.25.19.148:9090' // rosbridge_serverのWebSocketアドレス
+		      //url: 'ws://localhost:9090'
     });
 
     ros.on('connection', () => {
       console.log('Connected to ROS 2');
+		      alert("open");
     });
 
     ros.on('error', (error) => {
       console.error('Error connecting to ROS 2:', error);
+		      alert("err");
     });
 
     ros.on('close', () => {
       console.log('Connection to ROS 2 closed');
+		     alert("close");
     });
 
     // 地図トピックからデータを取得
@@ -136,8 +77,8 @@
 
       // 地図画像をLeafletに追加
       const bounds = [
-        [origin.y, origin.x], // 左下の座標
-        [origin.y + height * resolution, origin.x + width * resolution] // 右上の座標
+        [origin.y, origin.x],
+        [origin.y + height * resolution, origin.x + width * resolution]
       ];
 
       const img = L.imageOverlay(canvas.toDataURL(), bounds);
@@ -145,7 +86,8 @@
       mapLayer.clearLayers(); // 既存の地図をクリア
       mapLayer.addLayer(img); // 新しい地図を追加
 
-      lastBounds = bounds; // 最新の地図範囲を保持
+      // 地図のビューを自動的に調整
+      map.fitBounds(bounds); // 地図全体が収まるようにズーム調整
     });
 
     // 現在位置トピック
@@ -156,9 +98,10 @@
     });
 
     poseTopic.subscribe((message) => {
+		      alert(1);
       const position = message.pose.pose.position;
       const x = position.x;
-      const y = position.y - 1;
+      const y = position.y;
 
       console.log(`現在位置: x=${x}, y=${y}`);
 
@@ -168,6 +111,9 @@
       } else {
         robotMarker = L.marker([y, x]).addTo(map);
       }
+
+      // 地図の中心を現在位置に移動（ユーザー操作を妨げないようにコメントアウト可能）
+      // map.setView([y, x], map.getZoom());
     });
   </script>
 </body>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音声読み上げ</title>
+</head>
+<body>
+    <h1>MIRS音声読み上げデモ</h1>
+    
+    <button onclick="timebuff('一番の読み上げ')">1番読み上げ</button>
+    <button onclick="timebuff('二番の読み上げ')">2番読み上げ</button>
+    <button onclick="timebuff('三番の読み上げ')">3番読み上げ</button>
+    <button onclick="stopSpeech()">停止する</button>
+
+    <script>
+        let synth = window.speechSynthesis;
+        let utterance;
+
+	function timebuff(text){
+		//	    speakText();
+		initSpeech();
+		 setTimeout(() => {
+				     stopSpeech();
+              speakText(text);
+              },5000);
+		    }
+        function speakText(text) {
+            //const text = "読み上げる文章"
+            if (synth.speaking) {
+                console.warn("既に読み上げ中です");
+                return;
+            }
+            
+
+            utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "ja-JP"; // 日本語を設定
+            utterance.onend = () => {
+                console.log("読み上げ完了");
+            };
+            utterance.onerror = (event) => {
+                console.error("読み上げ中にエラーが発生しました", event);
+            };
+            synth.speak(utterance);
+        }
+
+        function stopSpeech() {
+            if (synth.speaking) {
+                synth.cancel();
+                console.log("読み上げを停止しました");
+            }
+        }
+
+	            function initSpeech() {
+            // 無音のテキストで音声合成を初期化
+            utterance = new SpeechSynthesisUtterance('');
+            synth.speak(utterance);
+					
+          //  speechInitialized = true;
+        }
+    </script>
+</body>
+</html>
+

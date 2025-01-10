@@ -68,7 +68,7 @@
 
     // ROSと通信するための設定
     const ros = new ROSLIB.Ros({
-      url: 'ws://localhost:9090' // rosbridgeサーバーのWebSocket URL
+      url: 'ws://172.25.19.148:9090' // rosbridgeサーバーのWebSocket URL
     });
 
     ros.on('connection', () => {

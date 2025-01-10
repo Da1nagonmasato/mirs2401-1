@@ -155,7 +155,7 @@
     .stroke .border {
       content: "";
       position: absolute;
-      opacity: 0;
+      opacity: 0; 
     }
 
     .stroke .border.top,
@@ -200,6 +200,7 @@
       border-left: 3px solid #000000;
       left: 0;
       bottom: 0;
+      
     }
 
     .stroke.is-animated .border {
@@ -285,6 +286,8 @@
 
 /*案内場所の表示スタイル*/
     #fade-text {
+	    position:absolute;
+	    bottom:110px;
       height: 80px;
       font-size: 60px;
       opacity: 0;
@@ -321,6 +324,7 @@
       position: absolute;
       bottom: 5.8%;
       left: 4%;
+      width:40%;
       transform: translateX(-15%);
     }
 
@@ -331,6 +335,43 @@
     }
 
     .fadebutton {
+	    position: absolute;
+	    bottom:0%;
+	    left:0%;
+      margin-top: 20px;
+      padding: 30px 40px;
+      font-size: 32px;
+      cursor: pointer;
+      border: none;
+      /*background-color: #007bff;*/
+      background-color: #050505;
+      color: white;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      z-index: 10;
+    }
+
+    .restartbutton {
+	                position: absolute;
+            bottom:0%;
+            left:0%;
+      margin-top: 20px;
+      padding: 30px 40px;
+      font-size: 32px;
+      cursor: pointer;
+      border: none;
+      /*background-color: #007bff;*/
+      background-color: #050505;
+      color: white;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      z-index: 10;
+    }
+
+     .stopbutton {
+	                 position: absolute;
+            bottom:0%;
+            left:47.5%;
       margin-top: 20px;
       padding: 30px 40px;
       font-size: 32px;
@@ -349,6 +390,8 @@
 	    font-size: 32px;
             padding: 1px;
             margin-top: 1px;
+	    position:absolute;
+	    bottom:190px;
         }
 
     .fadecontainer .border {
@@ -361,7 +404,7 @@
       border-top: 3px solid #000000;
       left: 0%;
       width: 95%;
-      top: 55%;
+      bottom: 107px;
     }
 
     .fadecontainer.is-animated .border.location {
@@ -384,7 +427,7 @@
       border-top: 3px solid #000000;
       left: 0%;
       width: 70%;
-      top:25%;
+      bottom:187px;
     }
 
     .fadecontainer.is-animated .border.status {
