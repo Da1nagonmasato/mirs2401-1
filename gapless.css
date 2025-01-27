@@ -287,11 +287,12 @@
 /*案内場所の表示スタイル*/
     #fade-text {
 	    position:absolute;
-	    bottom:110px;
+	    bottom:90px;
       height: 80px;
       font-size: 60px;
       opacity: 0;
       transform: translateX(-15%);
+      line-height: 1;
     }
 
     #fade-text-margin {

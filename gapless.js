@@ -51,7 +51,7 @@
     window.onload = () => {//読み込み時の処理
       
 //GASからのデータ取得参考https://monaledge.com/article/406
-      const url = "https://script.google.com/macros/s/AKfycbzJN4mIkNQ5Sf2pXzeQLs2_KydCdJLLNVl-RZTY-IoK9sh-hcnRxgorCS2GTkNRppnsMA/exec"; // GASのAPIのURL
+      const url = "https://script.google.com/macros/s/AKfycbyUL-lZOCgV1KyVRLx_I77KXbZx5RvM-OPtuibC9ShRVCe5y--3NHbsD-9z6mHQZqa74g/exec"; // GASのAPIのURL
 
       const requestParams = {
         method: "GET",
@@ -126,9 +126,11 @@ function showlogin(){
 
 　
 var ros = new ROSLIB.Ros({
-          //url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
-          url: 'ws://172.25.14.193:9090'　//その他デバイス向け(学校wifi)
+          url: 'ws://localhost:9090'  //松嶋PCの仮想環境向け
+          //url: 'ws://172.25.17.31:9090'　//その他デバイス向け(学校wifi)
 	  //url: 'ws://192.168.116.85:9090'　//その他デバイス向け(松嶋家wifi)
+	  //url: 'ws://192.168.11.12:9090'　//体育館
+	    //url: 'ws://172.20.10.12:9090' //戸部損の奴
         });//いちいち変えるのめんどくさい死んでくれ
 
         ros.on('connection', function() {
@@ -216,13 +218,21 @@ function fakeload(){
         textElement.classList.remove('show');
         textElement.classList.add('hide');
 
-	if((clickCount >= 0) && (messages.length - 2 > clickCount))goalpose(resev[clickCount + 1].x,resev[clickCount + 1].y,resev[clickCount + 1].z,resev[clickCount + 1].w);//goal_poseトピックの送信
+	if((clickCount >= 0) && (messages.length - 2 > clickCount)){
+	     goalpose(resev[clickCount + 1].x,resev[clickCount + 1].y,resev[clickCount + 1].z,resev[clickCount + 1].w);//goal_poseトピックの送信
+	     navButton.disabled = true;
+		navigating = true;
+		const startmess = "案内を開始します。次の目的地は" + resev[clickCount + 1].location +"です。";
+		addMessage(startmess, 0)
+                speakResponse(startmess);
+        }
 
         setTimeout(() => {
         console.log("hide");
         //clickCount ++; // 配列の長さで循環
-	let fontSize = Math.max(30, 68 - messages[clickCount].length * 2);
+	let fontSize = Math.max(20, 68 - messages[clickCount].length * 2.5);
 	//let lineHeight = fontSize * 1.2;
+		
 	textElement.style.fontSize = `${fontSize}px`;
 	//textElement.style.lineHeight = `${lineHeight}px`;
 	//textmarginElement.style.fontSize = `${60 - fontSize}px`;

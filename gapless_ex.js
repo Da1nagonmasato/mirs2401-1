@@ -1,8 +1,8 @@
         const imageUrls = [
-            './gaprisu.png',
-            '/api/placeholder/800/600',
-            '/api/placeholder/800/600',
-            '/api/placeholder/800/600'
+            './使用法1.png',
+            './使用法2.png',
+            './使用法3.png',
+	    './gaprisu.png'
         ];
 
         const showImageBtn = document.getElementById('show-image-btn');

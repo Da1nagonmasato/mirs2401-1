@@ -100,7 +100,27 @@ amclPoseTopic.subscribe((message) => {//amcl_poseのサブスクライブ
                 4: "SUCCEEDED",
                 5: "CANCELED",
                 6: "ABORTED"
-            }[latestStatus] || "INVALID STATUS";
+            }[latestStatus] || "INVALID STATUS";//succeededになったらnavigating = false;にする
+		//
+		if(statusText == "SUCCEEDED"){
+			if(navigating == true){
+				console.log(clickCount);
+				console.log(resev.length);
+			 if(resev.length == clickCount + 1){
+				 const startmess = "案内を完了しました。お疲れ様でした。気を付けてお帰りください";
+                         addMessage(startmess, 0);
+                         speakResponse(startmess);
+                                navButton.disabled = false;
+			 }else{
+                         const startmess = "案内を完了しました。次の目的地は" + resev[clickCount + 1].location + "です。次の案内は次の案内ボタンを押してください。";
+			 addMessage(startmess, 0);
+                         speakResponse(startmess);
+				navButton.disabled = false;
+			 }
+			}
+                navigating = false;
+
+		}
 
             document.getElementById('status').innerText = `Status: ${statusText}`;
         });
@@ -142,6 +162,7 @@ function restart(){
 restartButton.style.display = 'none';
 navigating = true;
 	navButton.style.display = 'flex';
+	
 if((clickCount >= 0) && (messages.length - 1 > clickCount))goalpose(resev[clickCount].x,resev[clickCount].y,resev[clickCount].z,resev[clickCount].w);
 }
 

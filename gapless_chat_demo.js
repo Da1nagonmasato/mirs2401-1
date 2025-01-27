@@ -1,5 +1,6 @@
 //script
-
+let talk = 0;
+const demotext = ["沼津高専には機械工学科、電気電子工学科、電子制御工学科、制御情報工学科、物質工学科があり様々なことを学ぶことができます。","電子制御工学科は様々な工学について学べる科だよ。電気電子工学、制御工学、情報工学、機械工学などの分野について基礎から応用までバランスよく学ぶことができるんだ。だから応用力のある人材を育てることが出来るよ。","クリエイティブラボでは電子制御工学科の4年生がミルスを行っています。ミルスでは、1年間を通して与えられ>たテーマの課題を見つけ、解決するという流れで行われています。","",""];
         let synth = window.speechSynthesis;
         let utterance;
         let recognizedText = '';
@@ -105,9 +106,10 @@ const system_prompt2 = "以下に質問文を示す。";
 
                 const data = await response.json();
                 const responseText = data.candidates[0].content.parts[0].text;
-                addMessage(responseText, false);
+                addMessage(demotext[talk], false);
                 statusIndicator.textContent = "応答が完了しました";
-                speakResponse(responseText);
+                speakResponse(demotext[talk]);
+		    talk ++;
             } catch (error) {
                 statusIndicator.textContent = `Error: ${error.message}`;
             }
